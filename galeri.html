@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <title>Katalog Kendaraan - RizkiAuto</title>
+    <link rel="canonical" href="https://rizkiauto.id/galeri.html">
+    <meta property="og:image" content="https://rizkiauto.id/assets/img/Photo.jpg">
+    <meta property="og:site_name" content="RizkiAuto MUF">
+    <meta name="description" content="Lihat katalog lengkap mobil bekas berkualitas di RizkiAuto. Temukan SUV, MPV, Sedan, dan City Car idaman Anda dengan fasilitas kredit dari MUF.">
+    <meta property="og:title" content="Katalog Kendaraan - RizkiAuto">
+    <meta property="og:description" content="Lihat katalog lengkap mobil bekas berkualitas di RizkiAuto. Temukan SUV, MPV, Sedan, dan City Car idaman Anda.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="assets/css/style.css?v=4">
+    <style>
+        .catalog-header {
+            padding: 140px 0 60px;
+            text-align: center;
+        }
+        .catalog-header h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .catalog-header p {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .car-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .car-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .car-img-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+        }
+        .car-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .car-card:hover .car-img-wrapper img {
+            transform: scale(1.05);
+        }
+        .car-info {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .car-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+        .car-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .car-action {
+            margin-top: auto;
+            display: flex;
+            gap: 12px;
+        }
+        .car-action .btn {
+            flex-grow: 1;
+            justify-content: center;
+            font-size: 0.875rem;
+            padding: 10px 16px;
+        }
+        
+        /* Grid Adjustments */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-bottom: 80px;
+        }
+        
+        @media (max-width: 992px) {
+            .catalog-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .catalog-grid { grid-template-columns: 1fr; }
+            .catalog-header h1 { font-size: 2.5rem; }
+        }
+    </style>
+    <!-- Catalog Schema (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Mobil Premium Series"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "SUV Keluarga"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "City Car Hatchback"
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+
+    <!-- Floating Navbar -->
+    <nav class="floating-nav">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <img src="assets/img/muf-logo.avif" alt="Mandiri Utama Finance" style="height: 36px; width: auto; object-fit: contain;">
+            </a>
+                        <div class="nav-links">
+                <a href="index.html#keunggulan">Keunggulan</a>
+                <a href="index.html#proses">Cara Kerja</a>
+                <a href="galeri.html" style="color: var(--primary);">Galeri</a>
+                <a href="index.html#profil">Profil</a>
+                <a href="index.html#faq">FAQ</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
+                    <i class="ri-moon-line"></i>
+                </button>
+                <a href="index.html#kontak" class="btn btn-primary">Pengajuan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="catalog-header">
+            <h1>Katalog Kendaraan</h1>
+            <p>Pilih mobil impian Anda. Kami menyediakan berbagai pilihan merek dengan kondisi prima dan proses pembiayaan yang mudah melalui MUF.</p>
+        </div>
+
+        <div class="catalog-grid">
+            <!-- Car 1 -->
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <img src="assets/img/car1.avif" alt="Mobil Bekas Premium Series Terbaik di RizkiAuto">
+                </div>
+                <div class="car-info">
+                    <h3 class="car-title">Mobil Premium Series</h3>
+                    <div class="car-tags">
+                        <span class="tag"><i class="ri-gas-station-line"></i> Bensin</span>
+                        <span class="tag"><i class="ri-settings-4-line"></i> Matic</span>
+                        <span class="tag"><i class="ri-calendar-line"></i> 2021+</span>
+                    </div>
+                    <div class="car-action">
+                        <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20tertarik%20untuk%20hitung%20simulasi%20kredit%20mobil%20seperti%20di%20Galeri%20(Gambar%201)." target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car 2 -->
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <img src="assets/img/car2.avif" alt="Kredit Mobil Bekas SUV Keluarga Murah">
+                </div>
+                <div class="car-info">
+                    <h3 class="car-title">SUV Keluarga</h3>
+                    <div class="car-tags">
+                        <span class="tag"><i class="ri-gas-station-line"></i> Diesel</span>
+                        <span class="tag"><i class="ri-settings-4-line"></i> Matic</span>
+                        <span class="tag"><i class="ri-calendar-line"></i> 2020+</span>
+                    </div>
+                    <div class="car-action">
+                        <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20tertarik%20untuk%20hitung%20simulasi%20kredit%20mobil%20seperti%20di%20Galeri%20(Gambar%202)." target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car 3 -->
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <img src="assets/img/car3.avif" alt="Pembiayaan Mobil City Car Hatchback Irit">
+                </div>
+                <div class="car-info">
+                    <h3 class="car-title">City Car Hatchback</h3>
+                    <div class="car-tags">
+                        <span class="tag"><i class="ri-gas-station-line"></i> Bensin</span>
+                        <span class="tag"><i class="ri-settings-4-line"></i> Matic</span>
+                        <span class="tag"><i class="ri-user-line"></i> 5 Penumpang</span>
+                    </div>
+                    <div class="car-action">
+                        <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20tertarik%20untuk%20hitung%20simulasi%20kredit%20mobil%20seperti%20di%20Galeri%20(Gambar%203)." target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car 4 -->
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <img src="assets/img/car1.avif" alt="Sedan Eksekutif Bekas Berkualitas">
+                </div>
+                <div class="car-info">
+                    <h3 class="car-title">Sedan Eksekutif</h3>
+                    <div class="car-tags">
+                        <span class="tag"><i class="ri-gas-station-line"></i> Bensin</span>
+                        <span class="tag"><i class="ri-settings-4-line"></i> Matic</span>
+                        <span class="tag"><i class="ri-calendar-line"></i> 2022+</span>
+                    </div>
+                    <div class="car-action">
+                        <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20tertarik%20untuk%20hitung%20simulasi%20kredit%20mobil%20seperti%20di%20Galeri%20(Gambar%204)." target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car 5 -->
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <img src="assets/img/car2.avif" alt="Mobil MPV Keluarga 7 Penumpang">
+                </div>
+                <div class="car-info">
+                    <h3 class="car-title">MPV Pilihan</h3>
+                    <div class="car-tags">
+                        <span class="tag"><i class="ri-gas-station-line"></i> Bensin</span>
+                        <span class="tag"><i class="ri-settings-4-line"></i> Manual/Matic</span>
+                        <span class="tag"><i class="ri-user-line"></i> 7 Penumpang</span>
+                    </div>
+                    <div class="car-action">
+                        <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20tertarik%20untuk%20hitung%20simulasi%20kredit%20mobil%20seperti%20di%20Galeri%20(Gambar%205)." target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car 6 -->
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <img src="assets/img/car3.avif" alt="Compact SUV DP Ringan via MUF">
+                </div>
+                <div class="car-info">
+                    <h3 class="car-title">Compact SUV</h3>
+                    <div class="car-tags">
+                        <span class="tag"><i class="ri-gas-station-line"></i> Bensin</span>
+                        <span class="tag"><i class="ri-settings-4-line"></i> Matic</span>
+                        <span class="tag"><i class="ri-calendar-line"></i> 2023</span>
+                    </div>
+                    <div class="car-action">
+                        <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20tertarik%20untuk%20hitung%20simulasi%20kredit%20mobil%20seperti%20di%20Galeri%20(Gambar%206)." target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 100px;">
+            <p style="color: var(--text-muted); margin-bottom: 24px;">Tidak menemukan mobil yang Anda cari? Kami melayani pendanaan untuk semua jenis merek dan tipe.</p>
+            <a href="https://wa.me/6282328936019?text=Halo%20Mas%20Rizki,%20saya%20mencari%20mobil%20tipe..." class="btn btn-secondary btn-large"><i class="ri-whatsapp-fill" style="color: #25D366; font-size: 1.25rem;"></i> Konsultasikan Pencarian Anda</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+                <p>&copy; 2026 RizkiAuto. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="syarat.html">Syarat & Ketentuan</a>
+                    <a href="privasi.html">Kebijakan Privasi</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+        <!-- Floating Theme Toggle for Mobile -->
+    <button id="theme-toggle-mobile" class="icon-btn mobile-theme-toggle" aria-label="Toggle Theme">
+        <i class="ri-moon-line"></i>
+    </button>
+        <!-- Floating WhatsApp -->
+    <a href="https://wa.me/6282328936019" class="floating-wa" target="_blank" aria-label="Konsultasi WhatsApp">
+        <i class="ri-whatsapp-fill"></i>
+    </a>
+    <script src="assets/js/script.js?v=4"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
