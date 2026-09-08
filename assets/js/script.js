@@ -435,7 +435,21 @@ async function fetchGlobalGaleri() {
                 const h4 = document.createElement('h4');
                 h4.innerText = item.title;
                 
+                let tagsHtml = '';
+                
+                if(item.year) tagsHtml += '<span class="gallery-info-badge"><i class="ri-calendar-line"></i> ' + item.year + '</span>';
+                if(item.transmission) tagsHtml += '<span class="gallery-info-badge"><i class="ri-settings-4-line"></i> ' + item.transmission + '</span>';
+                if(item.fuel_type) tagsHtml += '<span class="gallery-info-badge"><i class="ri-gas-station-line"></i> ' + item.fuel_type + '</span>';
+                
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'gallery-tags-container';
+                tagsContainer.innerHTML = tagsHtml;
+                
                 overlay.appendChild(h4);
+                if (tagsHtml !== '') {
+                    overlay.appendChild(tagsContainer);
+                }
+                
                 div.appendChild(img);
                 div.appendChild(overlay);
                 grid1.appendChild(div);
@@ -460,7 +474,23 @@ async function fetchGlobalGaleri() {
                 // We'll just construct the WA link and the global fetchSettings will update the phone number later if we use the right selector!
                 // Actually, fetchGlobalSettings updates a[href^="https://wa.me"] so it will auto-update!
                 
-                div.innerHTML = '<div class="car-img-wrapper"><img src="' + item.image_url + '" alt="' + item.title + '"></div><div class="car-info"><h3 class="car-title">' + item.title + '</h3><div class="car-tags"><span class="tag"><i class="ri-checkbox-circle-fill text-primary"></i> Tersedia via MUF</span></div><div class="car-action"><a href="https://wa.me/6282328936019?text=' + encodeURIComponent('Halo Mas Rizki, saya tertarik untuk hitung simulasi kredit mobil ' + item.title) + '" target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a></div></div>';
+                                const dataStr = encodeURIComponent(JSON.stringify(item));
+                
+                let tagsHtml = '';
+                if(item.year) tagsHtml += '<span class="tag"><i class="ri-calendar-line"></i> ' + item.year + '</span>';
+                if(item.transmission) tagsHtml += '<span class="tag"><i class="ri-settings-4-line"></i> ' + item.transmission + '</span>';
+                if(item.fuel_type) tagsHtml += '<span class="tag"><i class="ri-gas-station-line"></i> ' + item.fuel_type + '</span>';
+                if(!tagsHtml) tagsHtml = '<span class="tag"><i class="ri-checkbox-circle-fill text-primary"></i> Tersedia via MUF</span>';
+                
+                div.innerHTML = '<div class="car-img-wrapper" style="cursor:pointer;" onclick="openCarModal(\'' + dataStr + '\')"><img src="' + item.image_url + '" alt="' + item.title + '"></div>' + 
+                                '<div class="car-info">' + 
+                                    '<h3 class="car-title" style="cursor:pointer;" onclick="openCarModal(\'' + dataStr + '\')">' + item.title + '</h3>' + 
+                                    '<div style="color: var(--primary); font-weight: 700; margin-bottom: 12px;">' + (item.price || '') + '</div>' +
+                                    '<div class="car-tags">' + tagsHtml + '</div>' + 
+                                    '<div class="car-action">' + 
+                                        '<button onclick="openCarModal(\'' + dataStr + '\')" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="ri-file-info-line"></i> Lihat Detail</button>' + 
+                                    '</div>' + 
+                                '</div>';
                 
                 grid2.appendChild(div);
             });
@@ -497,6 +527,13 @@ async function fetchGlobalBrands() {
         }
     }
 }
+
+
+
+
+
+
+
 
 
 

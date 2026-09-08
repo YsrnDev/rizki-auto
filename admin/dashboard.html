@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=8">
     <style>
         body { display: none; } /* Hidden by default for security */
         body { background-color: var(--bg-body); }
@@ -274,8 +274,39 @@
                     <form id="form-add-galeri" style="display: flex; flex-direction: column; min-height: 0;">
                         <div style="overflow-y: auto; padding-right: 8px;">
                             <div class="form-group">
-                                <label>Nama/Deskripsi Kendaraan</label>
-                                <input type="text" id="galeri-title" class="form-control" required placeholder="Contoh: Honda Brio Satya E CVT (2022)">
+                                <label>Nama Kendaraan</label>
+                                <input type="text" id="galeri-title" class="form-control" required placeholder="Contoh: Honda Brio Satya E CVT">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label>Harga / TDP</label>
+                                    <input type="text" id="galeri-price" class="form-control" placeholder="Contoh: 150000000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tahun</label>
+                                    <input type="text" id="galeri-year" class="form-control" placeholder="Contoh: 2022">
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label>Transmisi</label>
+                                    <select id="galeri-transmission" class="form-control">
+                                        <option value="Automatic">Automatic</option>
+                                        <option value="Manual">Manual</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bahan Bakar</label>
+                                    <select id="galeri-fuel" class="form-control">
+                                        <option value="Bensin">Bensin</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Listrik/Hybrid">Listrik/Hybrid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Deskripsi / Spesifikasi Lengkap</label>
+                                <textarea id="galeri-description" class="form-control" rows="3" placeholder="Contoh: Pajak hidup, KM rendah, tangan pertama..."></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Foto Kendaraan</label>
@@ -610,7 +641,7 @@
                 btnEdit.style.flex = '1';
                 btnEdit.style.padding = '8px';
                 btnEdit.innerText = 'Edit';
-                btnEdit.onclick = () => openEditGaleri(item.id, item.title, item.image_url);
+                btnEdit.onclick = () => openEditGaleri(item.id, item.title, item.image_url, item.price, item.year, item.transmission, item.fuel_type, item.description);
                 
                 const btnDelete = document.createElement('button');
                 btnDelete.className = 'btn btn-secondary';
@@ -637,11 +668,16 @@
 
 
 
-                function openEditGaleri(id, title, photoUrl) {
+                function openEditGaleri(id, title, photoUrl, price, year, transmission, fuel, desc) {
             currentEditGaleriId = id;
             currentEditGaleriPhoto = photoUrl;
-            document.getElementById('modal-galeri-title').innerText = 'Edit Foto Galeri';
-            document.getElementById('galeri-title').value = title;
+            document.getElementById('modal-galeri-title').innerText = 'Edit Kendaraan';
+            document.getElementById('galeri-title').value = title || '';
+            document.getElementById('galeri-price').value = price || '';
+            document.getElementById('galeri-year').value = year || '';
+            document.getElementById('galeri-transmission').value = transmission || 'Automatic';
+            document.getElementById('galeri-fuel').value = fuel || 'Bensin';
+            document.getElementById('galeri-description').value = desc || '';
             document.getElementById('galeri-photo').required = false;
             
             // Ceklis jika foto ini adalah hero image
@@ -653,7 +689,7 @@
         function openAddGaleri() {
             currentEditGaleriId = null;
             currentEditGaleriPhoto = null;
-            document.getElementById('modal-galeri-title').innerText = 'Tambah Foto Galeri';
+            document.getElementById('modal-galeri-title').innerText = 'Tambah Kendaraan';
             document.getElementById('form-add-galeri').reset();
             document.getElementById('galeri-photo').required = true;
             document.getElementById('galeri-is-hero').checked = false;
@@ -672,13 +708,28 @@
             }
         }
 
+                // Auto-format Rupiah untuk field harga
+        document.getElementById('galeri-price').addEventListener('input', function(e) {
+            let value = this.value.replace(/[^0-9]/g, '');
+            if (value) {
+                this.value = 'Rp ' + parseInt(value, 10).toLocaleString('id-ID');
+            } else {
+                this.value = '';
+            }
+        });
+
         document.getElementById('form-add-galeri').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit-galeri');
             btn.innerText = 'Mengunggah...';
             btn.disabled = true;
             
-            const title = document.getElementById('galeri-title').value;
+                        const title = document.getElementById('galeri-title').value;
+            const price = document.getElementById('galeri-price').value;
+            const year = document.getElementById('galeri-year').value;
+            const transmission = document.getElementById('galeri-transmission').value;
+            const fuel_type = document.getElementById('galeri-fuel').value;
+            const description = document.getElementById('galeri-description').value;
             const fileInput = document.getElementById('galeri-photo');
             let image_url = currentEditGaleriPhoto;
             
@@ -709,10 +760,10 @@
 
             let error;
             if (currentEditGaleriId) {
-                const res = await sbClient.from('gallery').update({ title: title, image_url: image_url }).eq('id', currentEditGaleriId);
+                const res = await sbClient.from('gallery').update({ title, price, year, transmission, fuel_type, description, image_url }).eq('id', currentEditGaleriId);
                 error = res.error;
             } else {
-                const res = await sbClient.from('gallery').insert([{ title: title, image_url: image_url }]);
+                const res = await sbClient.from('gallery').insert([{ title, price, year, transmission, fuel_type, description, image_url }]);
                 error = res.error;
             }
             
@@ -1079,6 +1130,18 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
