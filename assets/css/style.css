@@ -57,6 +57,25 @@ body.dark-mode {
     --shadow-float: 0 20px 40px rgba(0,0,0,0.5);
     --primary-light: rgba(37, 99, 235, 0.2);
 }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-body);
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--text-muted);
+    border-radius: 6px;
+    border: 3px solid var(--bg-body);
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary);
+}
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-muted) var(--bg-body);
+}
 
 /* Base Reset */
 * {
@@ -926,6 +945,8 @@ body.dark-mode .nav-container.scrolled {
     display: inline-block;
     animation: spin 1s linear infinite;
 }
+
+
 
 
 
