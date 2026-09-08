@@ -448,7 +448,7 @@ async function fetchGlobalGaleri() {
         }
         
         // Target 2: Halaman Galeri (car-grid)
-        const grid2 = document.querySelector('.car-grid');
+        const grid2 = document.querySelector('.catalog-grid');
         if (grid2) {
             grid2.innerHTML = '';
             
@@ -497,6 +497,7 @@ async function fetchGlobalBrands() {
         }
     }
 }
+
 
 
 
