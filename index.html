@@ -581,9 +581,25 @@
     <!-- Supabase JS (Frontend) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="assets/js/supabase-config.js"></script>
-    <script src="assets/js/script.js?v=68"></script>
+    <script src="assets/js/script.js?v=68">    <script>
+        // Catat kunjungan ke database
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof sbClient !== 'undefined') {
+                try {
+                    // Gunakan sessionStorage agar tidak menambah hitungan setiap kali refresh di sesi yang sama
+                    if (!sessionStorage.getItem('visited')) {
+                        await sbClient.rpc('increment_visitors');
+                        sessionStorage.setItem('visited', 'true');
+                    }
+                } catch (e) {
+                    console.error('Gagal mencatat kunjungan', e);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
+
 
 
 

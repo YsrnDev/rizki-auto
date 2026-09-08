@@ -650,16 +650,19 @@
 
         async function loadDashboardStats() {
             try {
-                const [cars, testi, faq, brands] = await Promise.all([
+                const [cars, testi, brands, visitors] = await Promise.all([
                     sbClient.from('gallery').select('*', { count: 'exact', head: true }),
                     sbClient.from('testimonials').select('*', { count: 'exact', head: true }),
-                    sbClient.from('faq').select('*', { count: 'exact', head: true }),
-                    sbClient.from('brands').select('*', { count: 'exact', head: true })
+                    sbClient.from('brands').select('*', { count: 'exact', head: true }),
+                    sbClient.from('analytics').select('count').eq('id', 'visitors').single()
                 ]);
                 
                 document.getElementById('stat-cars').innerText = cars.count || 0;
                 document.getElementById('stat-testimonials').innerText = testi.count || 0;
                 document.getElementById('stat-brands').innerText = brands.count || 0;
+                
+                const visitorCount = visitors.data ? visitors.data.count : 0;
+                document.getElementById('stat-visitors').innerText = visitorCount.toLocaleString();
                 
                 const { data: carData } = await sbClient.from('gallery').select('transmission, fuel_type');
                 if (carData) {
