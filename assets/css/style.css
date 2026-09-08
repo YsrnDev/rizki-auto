@@ -127,7 +127,7 @@ ul { list-style: none; }
 .btn {
     display: inline-flex;
     align-items: center;
-    /* justify-content removed */
+    justify-content: center;
     gap: 8px;
     padding: 12px 24px;
     border-radius: var(--radius-md);
@@ -170,7 +170,7 @@ ul { list-style: none; }
     border-radius: 50%;
     display: flex;
     align-items: center;
-    /* justify-content removed */
+    justify-content: center;
     font-size: 1.25rem;
     cursor: pointer;
     transition: var(--transition);
@@ -194,7 +194,7 @@ ul { list-style: none; }
     max-width: 100%;
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
-    /* justify-content removed */
+    justify-content: center;
 }
 .floating-nav.scrolled {
     top: 24px;
@@ -536,7 +536,7 @@ html.dark-mode .floating-badge {
     border-radius: 50%;
     display: flex;
     align-items: center;
-    /* justify-content removed */
+    justify-content: center;
     font-size: 2rem;
     margin-bottom: 24px;
     transition: var(--transition);
@@ -588,7 +588,7 @@ html.dark-mode .floating-badge {
     border-radius: 50%;
     display: flex;
     align-items: center;
-    /* justify-content removed */
+    justify-content: center;
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 700;
@@ -823,7 +823,7 @@ html.dark-mode .floating-badge {
     color: var(--text-main);
     display: flex;
     align-items: center;
-    /* justify-content removed */
+    justify-content: center;
     font-size: 1.25rem;
     transition: var(--transition);
 }
@@ -885,7 +885,7 @@ html.dark-mode .floating-badge {
     border-radius: 50%;
     display: flex;
     align-items: center;
-    /* justify-content removed */
+    justify-content: center;
     font-size: 2rem;
     box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
     z-index: 9998;
@@ -1064,7 +1064,7 @@ html.dark-mode .floating-badge {
 }
 .carousel-dots {
     display: flex;
-    /* justify-content removed */
+    justify-content: center;
     gap: 8px;
     margin-top: 32px;
 }
@@ -1092,9 +1092,9 @@ html.dark-mode .carousel-dot {
     .hero-container { grid-template-columns: 1fr; gap: 48px; text-align: center; }
     /* .hero-visual { order: -1; } Removed to place image below text on mobile */
     .hero-subtitle { margin: 0 auto 40px; }
-    .hero-cta-group { /* justify-content removed */ }
+    .hero-cta-group { justify-content: center; }
 
-.trust-indicators { /* justify-content removed */ }
+.trust-indicators { justify-content: center; }
     
     .profil-grid { grid-template-columns: 1fr; gap: 48px; text-align: center; }
     .profil-image { max-width: 400px; margin: 0 auto; }
@@ -1145,7 +1145,7 @@ html.dark-mode .carousel-dot {
     .hero { padding: 140px 0 64px; }
     .hero-title { font-size: 2.5rem; }
     .hero-cta-group { flex-direction: column; }
-    .hero-cta-group .btn { width: 100%; text-align: center; /* justify-content removed */ }
+    .hero-cta-group .btn { width: 100%; text-align: center; justify-content: center; }
     
     .features-grid { grid-template-columns: 1fr; }
     
@@ -1170,7 +1170,7 @@ html.dark-mode .carousel-dot {
         width: 50px;
         height: 50px;
         align-items: center;
-        /* justify-content removed */
+        justify-content: center;
         font-size: 1.25rem;
     }
     
@@ -1190,11 +1190,11 @@ html.dark-mode .carousel-dot {
     .footer-brand { display: flex; flex-direction: column; align-items: center; }
     .brand-desc { margin: 24px auto; text-align: center; }
     .footer-contact, .footer-links { align-items: center; }
-    .footer-contact p { /* justify-content removed */ text-align: center; }
-    .social-links { /* justify-content removed */ flex-wrap: wrap; width: 100%; }
+    .footer-contact p { justify-content: center; text-align: center; }
+    .social-links { justify-content: center; flex-wrap: wrap; width: 100%; }
     
     .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
-    .footer-bottom-links { flex-direction: row; /* justify-content removed */ gap: 16px; flex-wrap: wrap; }
+    .footer-bottom-links { flex-direction: row; justify-content: center; gap: 16px; flex-wrap: wrap; }
     
     .floating-contact-card { bottom: -16px; right: -16px; padding: 12px 16px; }
     .floating-contact-card i { font-size: 1.5rem; padding: 8px; }
@@ -1339,7 +1339,7 @@ html.dark-mode .carousel-dot {
     .gallery-tags-container {
         gap: 3px !important;
         margin-top: 4px !important;
-        /* justify-content removed */
+        justify-content: flex-start;
     }
 }
 
@@ -1351,3 +1351,4 @@ html.dark-mode .carousel-dot {
         flex-wrap: wrap; /* Safety wrap if text is too long */
     }
 }
+
