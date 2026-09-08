@@ -639,3 +639,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+// --- Kemananan Anti-Copy (Frontend Saja) ---
+document.addEventListener('contextmenu', event => event.preventDefault()); // Matikan Klik Kanan
+document.addEventListener('dragstart', event => {
+    if (event.target.tagName.toLowerCase() === 'img') {
+        event.preventDefault(); // Matikan Drag Gambar
+    }
+});
+
+const securityStyle = document.createElement('style');
+securityStyle.innerHTML = `
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    input, textarea, select {
+        -webkit-user-select: auto;
+        -moz-user-select: auto;
+        -ms-user-select: auto;
+        user-select: auto;
+    }
+`;
+document.head.appendChild(securityStyle);
+
