@@ -1155,9 +1155,12 @@
                 if (fileEl.files.length > 0) {
                     const file = fileEl.files[0];
                     const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
-                    const { data, error } = await sbClient.storage.from('images').upload(fileName, file);
+                    const { data, error } = await sbClient.storage.from('uploads').upload(fileName, file);
                     if (!error) {
-                        uploadedUrls[key] = supabaseUrl + '/storage/v1/object/public/images/' + fileName;
+                        const { data: publicUrlData } = sbClient.storage.from('uploads').getPublicUrl(fileName);
+                        uploadedUrls[key] = publicUrlData.publicUrl;
+                    } else {
+                        alert('Gagal mengupload ' + key + ': ' + error.message);
                     }
                 } else {
                     const preview = document.getElementById('preview-' + key);
@@ -1191,6 +1194,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
