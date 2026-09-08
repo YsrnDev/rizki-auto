@@ -240,6 +240,26 @@ async function fetchGlobalSettings() {
             }
         }
 
+        // Profile & Logo Updates
+        if (settings.profile_name) {
+            const nameEl = document.getElementById('profile-name-text');
+            if (nameEl) nameEl.innerText = settings.profile_name;
+        }
+        if (settings.profile_role) {
+            const roleEl = document.getElementById('profile-role-text');
+            if (roleEl) roleEl.innerHTML = settings.profile_role;
+        }
+        if (settings.profile_photo) {
+            const photoEl = document.getElementById('profile-portrait-img');
+            if (photoEl) photoEl.src = settings.profile_photo;
+        }
+        if (settings.website_logo) {
+            const logoEls = document.querySelectorAll('.website-logo-img');
+            logoEls.forEach(img => {
+                img.src = settings.website_logo;
+            });
+        }
+
         // Update Email Links
         if (settings.email) {
             const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
@@ -615,6 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
