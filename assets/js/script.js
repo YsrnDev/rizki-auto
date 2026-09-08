@@ -204,3 +204,238 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+
+// --- SUPABASE DYNAMIC CONTENT FETCHER ---
+async function fetchGlobalSettings() {
+    if (typeof sbClient === 'undefined') return;
+    
+    const { data, error } = await sbClient.from('settings').select('*');
+    if (data) {
+        let settings = {};
+        data.forEach(item => settings[item.key] = item.value);
+
+                // Update WhatsApp Links & Text
+        if (settings.whatsapp) {
+            const cleanWa = settings.whatsapp.replace(/[^0-9]/g, '');
+            const waLinks = document.querySelectorAll('a[href^="https://wa.me"]');
+            waLinks.forEach(link => {
+                link.href = "https://wa.me/" + cleanWa;
+            });
+            
+            // Format for display (e.g., 62812... -> 0812...)
+            let displayWa = cleanWa;
+            if (displayWa.startsWith('62')) {
+                displayWa = '0' + displayWa.substring(2);
+            }
+            
+            const profileText = document.getElementById('profile-phone-text');
+            if (profileText) {
+                // Add hyphens for readability if possible
+                let formattedWa = displayWa;
+                if (displayWa.length >= 10) {
+                    formattedWa = displayWa.substring(0,4) + '-' + displayWa.substring(4,8) + '-' + displayWa.substring(8);
+                }
+                profileText.innerText = formattedWa;
+            }
+        }
+
+        // Update Email Links
+        if (settings.email) {
+            const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+            emailLinks.forEach(link => {
+                link.href = "mailto:" + settings.email;
+                // If it contains text that looks like the email, update it
+                if (link.innerText.includes('@')) {
+                    link.innerHTML = `<i class="ri-mail-fill"></i> ` + settings.email;
+                }
+            });
+        }
+
+        // Update Instagram Links
+        if (settings.instagram) {
+            const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
+            igLinks.forEach(link => link.href = settings.instagram);
+        }
+
+        // Update Facebook Links
+        if (settings.facebook) {
+            const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
+            fbLinks.forEach(link => link.href = settings.facebook);
+        }
+    }
+}
+
+
+// --- SUPABASE DYNAMIC FAQ FETCHER ---
+async function fetchGlobalFaq() {
+    if (typeof sbClient === 'undefined') return;
+    
+    const { data, error } = await sbClient.from('faq').select('*').order('order_num', { ascending: true }).order('created_at', { ascending: true });
+    if (data && data.length > 0) {
+        const faqList = document.querySelector('.faq-list');
+        if (!faqList) return;
+        
+        // Remove old hardcoded FAQs, keep only the bottom help section if exists
+        const helpSection = Array.from(faqList.children).filter(el => el.tagName === 'H4' || el.tagName === 'A');
+        faqList.innerHTML = '';
+        
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'faq-item';
+            // Initial reveal state so they animate in
+            div.style.opacity = '0';
+            div.style.transform = 'translateY(30px)';
+            div.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            div.innerHTML = '<button class="faq-question"><span>' + item.question + '</span><i class="ri-arrow-down-s-line"></i></button><div class="faq-answer"><p>' + item.answer + '</p></div>';
+            
+            // Re-attach click logic
+            const btn = div.querySelector('.faq-question');
+            btn.addEventListener('click', () => {
+                const isActive = div.classList.contains('active');
+                
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(other => {
+                    other.classList.remove('active');
+                    const ans = other.querySelector('.faq-answer');
+                    if (ans) ans.style.maxHeight = null;
+                });
+                
+                // Open clicked
+                if (!isActive) {
+                    div.classList.add('active');
+                    const answer = div.querySelector('.faq-answer');
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                }
+            });
+            
+            faqList.appendChild(div);
+            // Manually trigger reveal animation after a slight delay
+            setTimeout(() => {
+                div.style.opacity = '1';
+                div.style.transform = 'translateY(0)';
+            }, 100);
+        });
+        
+        // Restore help links
+        helpSection.forEach(el => faqList.appendChild(el));
+    }
+}
+
+// Panggil fungsi setelah halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    fetchGlobalSettings();
+    fetchGlobalFaq();
+    fetchGlobalTestimoni();
+    fetchGlobalGaleri();
+});
+
+
+
+
+
+
+
+
+
+// --- SUPABASE DYNAMIC TESTIMONI FETCHER ---
+async function fetchGlobalTestimoni() {
+    if (typeof sbClient === 'undefined') return;
+    
+    const { data, error } = await sbClient.from('testimonials').select('*').order('created_at', { ascending: false });
+    if (data && data.length > 0) {
+        const track = document.querySelector('.carousel-track');
+        if (!track) return;
+        
+        track.innerHTML = ''; // Clear old hardcoded testimonials
+        
+        data.forEach(item => {
+            const photoUrl = item.photo_url ? item.photo_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.client_name) + '&background=0a3a82&color=fff&size=128';
+            
+            const div = document.createElement('div');
+            div.className = 'testi-card';
+            const ratingCount = item.rating || 5;
+            let starsHtml = '';
+            for(let i=0; i<ratingCount; i++) { starsHtml += '<i class="ri-star-fill"></i>'; }
+            
+            div.innerHTML = '<div class="testi-photo"><img src="' + photoUrl + '" alt="' + item.client_name + '"><div class="testi-rating">' + starsHtml + '</div></div><div class="testi-content"><i class="ri-double-quotes-l quote-icon"></i><p class="testi-text">"' + item.quote + '"</p><div class="testi-divider"></div><div class="testi-author"><h4>' + item.client_name + '</h4><span>' + item.car_info + '</span></div></div>';
+            track.appendChild(div);
+        });
+
+        // RE-INIT CAROUSEL DOTS & DRAG
+        const dotsContainer = document.querySelector('.carousel-dots');
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            const cards = track.querySelectorAll('.testi-card');
+            
+            cards.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('carousel-dot');
+                if (index === 0) dot.classList.add('active');
+                
+                dot.addEventListener('click', () => {
+                    const scrollAmount = track.offsetWidth;
+                    track.scrollTo({ left: scrollAmount * index, behavior: 'smooth' });
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            track.addEventListener('scroll', () => {
+                const scrollPosition = track.scrollLeft;
+                const cardWidth = track.offsetWidth;
+                const activeIndex = Math.round(scrollPosition / cardWidth);
+                const dots = dotsContainer.querySelectorAll('.carousel-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === activeIndex);
+                });
+            });
+        }
+    }
+}
+
+
+// --- SUPABASE DYNAMIC GALERI FETCHER ---
+async function fetchGlobalGaleri() {
+    if (typeof sbClient === 'undefined') return;
+    
+    const { data, error } = await sbClient.from('gallery').select('*').order('created_at', { ascending: false });
+    if (data && data.length > 0) {
+        const grid = document.querySelector('.gallery-grid');
+        if (!grid) return;
+        
+        grid.innerHTML = ''; // Hapus galeri statis lama
+        
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            div.style.opacity = '0';
+            div.style.transform = 'translateY(30px)';
+            div.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            // Gunakan metode native agar aman dari kutip
+            const img = document.createElement('img');
+            img.src = item.image_url;
+            img.alt = item.title;
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'gallery-overlay';
+            
+            const h4 = document.createElement('h4');
+            h4.innerText = item.title;
+            
+            overlay.appendChild(h4);
+            div.appendChild(img);
+            div.appendChild(overlay);
+            grid.appendChild(div);
+            
+            setTimeout(() => {
+                div.style.opacity = '1';
+                div.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    }
+}
+
+
+

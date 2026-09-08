@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - RizkiAuto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body { display: none; } /* Hidden by default for security */
+        body { background-color: var(--bg-body); }
+        .admin-layout { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-brand img { height: 40px; margin-bottom: 48px; }
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .nav-item i { font-size: 1.25rem; }
+        .nav-item:hover { background: var(--bg-subtle); color: var(--text-main); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); }
+        .logout-btn {
+            margin-top: auto;
+            color: #ef4444;
+            cursor: pointer;
+        }
+        .logout-btn:hover { background: #fef2f2; color: #dc2626; }
+        
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 48px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px; }
+        .header h1 { font-family: var(--font-display); font-size: 2rem; color: var(--text-main); }
+        
+        /* Card Layout */
+        .admin-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+        /* Forms */
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.875rem; }
+        .form-control { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-body); color: var(--text-main); font-family: inherit; transition: var(--transition); }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        .panel-section { display: none; }
+        .panel-section.active { display: block; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: white; padding: 12px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); display: none; z-index: 1000; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="../assets/img/muf-logo.avif" alt="Logo">
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="welcome"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="#" class="nav-item" data-target="galeri"><i class="ri-image-line"></i> Galeri Kendaraan</a>
+                <a href="#" class="nav-item" data-target="testimoni"><i class="ri-discuss-line"></i> Testimoni</a>
+                <a href="#" class="nav-item" data-target="faq"><i class="ri-question-answer-line"></i> FAQ</a>
+                <a href="#" class="nav-item" data-target="settings"><i class="ri-settings-3-line"></i> Pengaturan Kontak</a>
+                <a href="#" class="nav-item logout-btn" id="logout-btn"><i class="ri-logout-box-line"></i> Keluar</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h1>Selamat Datang, Admin</h1>
+                <a href="../index.html" target="_blank" class="btn btn-secondary">Lihat Website <i class="ri-external-link-line"></i></a>
+            </div>
+
+            <!-- Panel: Welcome -->
+            <div id="panel-welcome" class="panel-section active admin-card">
+                <h3>Sistem Terhubung!</h3>
+                <p style="color: var(--text-muted); margin-top: 12px; line-height: 1.6;">
+                    Supabase telah berhasil dihubungkan. Anda sekarang dapat mengelola seluruh konten website dari panel ini. Silakan pilih menu di sebelah kiri.
+                </p>
+            </div>
+
+            <!-- Panel: Pengaturan Kontak -->
+            <div id="panel-settings" class="panel-section admin-card">
+                <h3>Pengaturan Kontak & Sosial Media</h3>
+                <p style="color: var(--text-muted); margin-top: 8px;">Ubah nomor WhatsApp dan tautan sosial media Anda di sini.</p>
+                
+                <form id="form-settings">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nomor WhatsApp (Contoh: 62812345678)</label>
+                            <input type="text" id="set-whatsapp" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Email</label>
+                            <input type="email" id="set-email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tautan Instagram</label>
+                            <input type="url" id="set-instagram" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Tautan Facebook</label>
+                            <input type="url" id="set-facebook" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn-save-settings" style="margin-top: 16px;">Simpan Perubahan</button>
+                </form>
+            </div>
+            
+            <!-- Panel: FAQ -->
+            <div id="panel-faq" class="panel-section admin-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h3>Manajemen FAQ (Tanya Jawab)</h3>
+                        <p style="color: var(--text-muted); margin-top: 4px;">Atur daftar pertanyaan yang sering ditanyakan klien.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddFaq()">+ Tambah FAQ</button>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="padding: 16px 8px; color: var(--text-muted);">Pertanyaan</th>
+                            <th style="padding: 16px 8px; color: var(--text-muted); width: 100px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="faq-tbody">
+                        <tr><td colspan="2" style="padding: 16px 8px; text-align: center;">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal Tambah FAQ -->
+            <div id="modal-add-faq" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+                <div class="admin-card" style="width: 100%; max-width: 500px; padding: 32px; display: flex; flex-direction: column; max-height: 90vh;">
+                    <h3 id="modal-faq-title" style="margin-bottom: 24px; flex-shrink: 0;">Tambah Pertanyaan Baru</h3>
+                    <form id="form-add-faq" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div style="overflow-y: auto; padding-right: 8px;">
+                            <div class="form-group">
+                                <label>Pertanyaan</label>
+                                <input type="text" id="faq-question" class="form-control" required placeholder="Contoh: Berapa lama prosesnya?">
+                            </div>
+                            <div class="form-group">
+                                <label>Jawaban</label>
+                                <textarea id="faq-answer" class="form-control" rows="4" required placeholder="Contoh: Proses persetujuan memakan waktu 1-3 hari..."></textarea>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-top: 24px; flex-shrink: 0; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('modal-add-faq').style.display='none'">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="btn-submit-faq" style="flex: 1;">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Panel: Testimoni -->
+            <div id="panel-testimoni" class="panel-section admin-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h3>Manajemen Testimoni</h3>
+                        <p style="color: var(--text-muted); margin-top: 4px;">Atur ulasan dari klien yang sudah berhasil dibantu.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddTesti()">+ Tambah Testimoni</button>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border);">
+                                <th style="padding: 16px 8px; color: var(--text-muted); width: 80px;">Foto</th>
+                                <th style="padding: 16px 8px; color: var(--text-muted);">Klien & Unit</th>
+                                <th style="padding: 16px 8px; color: var(--text-muted);">Ulasan</th>
+                                <th style="padding: 16px 8px; color: var(--text-muted); width: 100px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="testi-tbody">
+                            <tr><td colspan="4" style="padding: 16px 8px; text-align: center;">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal Tambah/Edit Testimoni -->
+            <div id="modal-add-testi" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+                <div class="admin-card" style="width: 100%; max-width: 500px; padding: 32px; display: flex; flex-direction: column; max-height: 90vh;">
+                    <h3 id="modal-testi-title" style="margin-bottom: 24px; flex-shrink: 0;">Tambah Testimoni</h3>
+                    <form id="form-add-testi" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div style="overflow-y: auto; padding-right: 8px;">
+                            <div class="form-group">
+                                <label>Nama Klien</label>
+                                <input type="text" id="testi-name" class="form-control" required placeholder="Contoh: Bpk. Budi">
+                            </div>
+                            <div class="form-group">
+                                <label>Unit Kendaraan (Tahun)</label>
+                                <input type="text" id="testi-car" class="form-control" required placeholder="Contoh: Honda Brio RS (2020)">
+                            </div>                            <div class="form-group">
+                                <label>Ulasan / Quote</label>
+                                <textarea id="testi-quote" class="form-control" rows="3" required placeholder="Contoh: Prosesnya sangat cepat dan mudah..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Rating Bintang</label>
+                                <select id="testi-rating" class="form-control" required>
+                                    <option value="5">5 Bintang (Sangat Puas)</option>
+                                    <option value="4">4 Bintang (Puas)</option>
+                                    <option value="3">3 Bintang (Cukup)</option>
+                                    <option value="2">2 Bintang (Kurang)</option>
+                                    <option value="1">1 Bintang (Sangat Kurang)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Klien (Opsional saat Edit)</label>
+                                <input type="file" id="testi-photo" class="form-control" accept="image/*">
+                                <small style="color: var(--text-muted); display: block; margin-top: 4px;">Format: JPG, PNG, WEBP (Maksimal 2MB)</small>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-top: 24px; flex-shrink: 0; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('modal-add-testi').style.display='none'">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="btn-submit-testi" style="flex: 1;">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Panel: Galeri -->
+            <div id="panel-galeri" class="panel-section admin-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h3>Manajemen Galeri Kendaraan</h3>
+                        <p style="color: var(--text-muted); margin-top: 4px;">Atur foto kendaraan yang berhasil dikirim ke klien.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddGaleri()">+ Tambah Foto</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px;" id="galeri-grid">
+                    <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Memuat data...</p>
+                </div>
+            </div>
+
+            <!-- Modal Tambah/Edit Galeri -->
+            <div id="modal-add-galeri" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+                <div class="admin-card" style="width: 100%; max-width: 500px; padding: 32px; display: flex; flex-direction: column; max-height: 90vh;">
+                    <h3 id="modal-galeri-title" style="margin-bottom: 24px; flex-shrink: 0;">Tambah Foto Galeri</h3>
+                    <form id="form-add-galeri" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div style="overflow-y: auto; padding-right: 8px;">
+                            <div class="form-group">
+                                <label>Nama/Deskripsi Kendaraan</label>
+                                <input type="text" id="galeri-title" class="form-control" required placeholder="Contoh: Honda Brio Satya E CVT (2022)">
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Kendaraan</label>
+                                <input type="file" id="galeri-photo" class="form-control" accept="image/*">
+                                <small style="color: var(--text-muted); display: block; margin-top: 4px;">Format: JPG, PNG, WEBP (Maksimal 2MB)</small>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-top: 24px; flex-shrink: 0; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('modal-add-galeri').style.display='none'">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="btn-submit-galeri" style="flex: 1;">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="toast-msg" class="toast">Data berhasil disimpan!</div>
+        </main>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script>
+                // Cek Login
+        sbClient.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                window.location.replace('index.html');
+            } else {
+                document.body.style.display = 'block';
+            }
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await sbClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        // Routing Sederhana
+        const navItems = document.querySelectorAll('.nav-item:not(.logout-btn)');
+        const panels = document.querySelectorAll('.panel-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = item.getAttribute('data-target');
+                if(!target) return;
+                
+                navItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-' + target).classList.add('active');
+                
+                if(target === 'settings') loadSettings();
+                if(target === 'faq') loadFaq();
+                if(target === 'testimoni') loadTestimoni();
+                if(target === 'galeri') loadGaleri();
+            });
+        });
+
+        // Tampilkan Notifikasi (Toast)
+        function showToast(message) {
+            const toast = document.getElementById('toast-msg');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+        // --- MANAJEMEN GALERI ---
+        let currentEditGaleriId = null;
+        let currentEditGaleriPhoto = null;
+
+        async function loadGaleri() {
+            const grid = document.getElementById('galeri-grid');
+            grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Memuat data...</p>';
+            
+            const { data, error } = await sbClient.from('gallery').select('*').order('created_at', { ascending: false });
+            
+            if (error) {
+                grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red; padding: 32px;">Gagal memuat data galeri</p>';
+                return;
+            }
+            
+            if (data.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Belum ada foto galeri.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.style.background = 'var(--bg-body)';
+                card.style.borderRadius = 'var(--radius-lg)';
+                card.style.overflow = 'hidden';
+                card.style.border = '1px solid var(--border)';
+                
+                const img = document.createElement('img');
+                img.src = item.image_url;
+                img.style.width = '100%';
+                img.style.height = '160px';
+                img.style.objectFit = 'cover';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.style.padding = '16px';
+                
+                const title = document.createElement('h4');
+                title.innerText = item.title;
+                title.style.margin = '0 0 16px 0';
+                title.style.fontSize = '1rem';
+                title.style.whiteSpace = 'nowrap';
+                title.style.overflow = 'hidden';
+                title.style.textOverflow = 'ellipsis';
+                
+                const btnGroup = document.createElement('div');
+                btnGroup.style.display = 'flex';
+                btnGroup.style.gap = '8px';
+                
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'btn btn-secondary';
+                btnEdit.style.flex = '1';
+                btnEdit.style.padding = '8px';
+                btnEdit.innerText = 'Edit';
+                btnEdit.onclick = () => openEditGaleri(item.id, item.title, item.image_url);
+                
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn btn-secondary';
+                btnDelete.style.flex = '1';
+                btnDelete.style.padding = '8px';
+                btnDelete.style.color = '#ef4444';
+                btnDelete.style.borderColor = '#fca5a5';
+                btnDelete.innerText = 'Hapus';
+                btnDelete.onclick = () => deleteGaleri(item.id, item.image_url);
+                
+                btnGroup.appendChild(btnEdit);
+                btnGroup.appendChild(btnDelete);
+                
+                contentDiv.appendChild(title);
+                contentDiv.appendChild(btnGroup);
+                
+                card.appendChild(img);
+                card.appendChild(contentDiv);
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddGaleri() {
+            currentEditGaleriId = null;
+            currentEditGaleriPhoto = null;
+            document.getElementById('modal-galeri-title').innerText = 'Tambah Foto Galeri';
+            document.getElementById('form-add-galeri').reset();
+            document.getElementById('galeri-photo').required = true;
+            document.getElementById('modal-add-galeri').style.display = 'flex';
+        }
+
+        function openEditGaleri(id, title, photoUrl) {
+            currentEditGaleriId = id;
+            currentEditGaleriPhoto = photoUrl;
+            document.getElementById('modal-galeri-title').innerText = 'Edit Foto Galeri';
+            document.getElementById('galeri-title').value = title;
+            document.getElementById('galeri-photo').required = false;
+            document.getElementById('modal-add-galeri').style.display = 'flex';
+        }
+
+        async function deleteGaleri(id, photoUrl) {
+            if(confirm('Yakin ingin menghapus foto ini dari Galeri?')) {
+                await sbClient.from('gallery').delete().eq('id', id);
+                if (photoUrl && photoUrl.includes('uploads/')) {
+                    const filePath = photoUrl.split('uploads/')[1];
+                    if (filePath) await sbClient.storage.from('uploads').remove([filePath]);
+                }
+                showToast('Foto berhasil dihapus');
+                loadGaleri();
+            }
+        }
+
+        document.getElementById('form-add-galeri').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-galeri');
+            btn.innerText = 'Mengunggah...';
+            btn.disabled = true;
+            
+            const title = document.getElementById('galeri-title').value;
+            const fileInput = document.getElementById('galeri-photo');
+            let image_url = currentEditGaleriPhoto;
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = 'galeri_' + Date.now() + '.' + fileExt;
+                
+                const { error: uploadError } = await sbClient.storage.from('uploads').upload(fileName, file);
+                
+                if (uploadError) {
+                    alert('Gagal mengunggah foto: ' + uploadError.message);
+                    btn.innerText = 'Simpan';
+                    btn.disabled = false;
+                    return;
+                }
+                
+                const { data: publicUrlData } = sbClient.storage.from('uploads').getPublicUrl(fileName);
+                image_url = publicUrlData.publicUrl;
+                
+                if (currentEditGaleriId && currentEditGaleriPhoto && currentEditGaleriPhoto.includes('uploads/')) {
+                    const oldPath = currentEditGaleriPhoto.split('uploads/')[1];
+                    if (oldPath) sbClient.storage.from('uploads').remove([oldPath]);
+                }
+            }
+
+            btn.innerText = 'Menyimpan...';
+
+            let error;
+            if (currentEditGaleriId) {
+                const res = await sbClient.from('gallery').update({ title: title, image_url: image_url }).eq('id', currentEditGaleriId);
+                error = res.error;
+            } else {
+                const res = await sbClient.from('gallery').insert([{ title: title, image_url: image_url }]);
+                error = res.error;
+            }
+            
+            btn.innerText = 'Simpan';
+            btn.disabled = false;
+            
+            if (!error) {
+                document.getElementById('modal-add-galeri').style.display = 'none';
+                document.getElementById('form-add-galeri').reset();
+                showToast(currentEditGaleriId ? 'Galeri diperbarui!' : 'Foto ditambahkan ke Galeri!');
+                loadGaleri();
+            } else {
+                alert('Gagal menyimpan: ' + error.message);
+            }
+        });
+
+        // --- MANAJEMEN TESTIMONI ---
+        let currentEditTestiId = null;
+        let currentEditTestiPhoto = null; // Store old photo URL
+
+        async function loadTestimoni() {
+            const tbody = document.getElementById('testi-tbody');
+            tbody.innerHTML = '<tr><td colspan="4" style="padding: 16px 8px; text-align: center;">Memuat...</td></tr>';
+            
+            const { data, error } = await sbClient.from('testimonials').select('*').order('created_at', { ascending: false });
+            
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="4" style="padding: 16px 8px; color: red;">Gagal memuat data</td></tr>';
+                return;
+            }
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="padding: 16px 8px; text-align: center; color: var(--text-muted);">Belum ada testimoni.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(testi => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border)';
+                
+                const tdImg = document.createElement('td');
+                tdImg.style.padding = '16px 8px';
+                if (testi.photo_url) {
+                    tdImg.innerHTML = '<img src="' + testi.photo_url + '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">';
+                } else {
+                    tdImg.innerHTML = '<div style="width: 60px; height: 60px; background: var(--bg-subtle); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="ri-image-line" style="color: var(--text-muted);"></i></div>';
+                }
+
+                const tdText = document.createElement('td');
+                tdText.style.padding = '16px 8px';
+                tdText.innerHTML = '<strong>' + testi.client_name + '</strong><br><span style="font-size: 0.875rem; color: var(--text-muted);">' + testi.car_info + '</span>';
+                
+                const tdQuote = document.createElement('td');
+                tdQuote.style.padding = '16px 8px';
+                tdQuote.innerHTML = '<span style="font-size: 0.875rem; color: var(--text-main);">' + testi.quote.substring(0, 80) + '...</span>';
+                
+                const tdActions = document.createElement('td');
+                tdActions.style.padding = '16px 8px';
+                tdActions.style.whiteSpace = 'nowrap';
+                
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'btn btn-secondary';
+                btnEdit.style.padding = '8px 12px';
+                btnEdit.style.marginRight = '8px';
+                btnEdit.style.color = 'var(--primary)';
+                btnEdit.style.borderColor = 'var(--primary-light)';
+                btnEdit.innerText = 'Edit';
+                btnEdit.onclick = () => openEditTesti(testi.id, testi.client_name, testi.car_info, testi.quote, testi.rating, testi.photo_url);
+                
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn btn-secondary';
+                btnDelete.style.padding = '8px 12px';
+                btnDelete.style.color = '#ef4444';
+                btnDelete.style.borderColor = '#fca5a5';
+                btnDelete.innerText = 'Hapus';
+                btnDelete.onclick = () => deleteTesti(testi.id, testi.photo_url);
+                
+                tdActions.appendChild(btnEdit);
+                tdActions.appendChild(btnDelete);
+                
+                tr.appendChild(tdImg);
+                tr.appendChild(tdText);
+                tr.appendChild(tdQuote);
+                tr.appendChild(tdActions);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openAddTesti() {
+            currentEditTestiId = null;
+            currentEditTestiPhoto = null;
+            document.getElementById('modal-testi-title').innerText = 'Tambah Testimoni';
+            document.getElementById('form-add-testi').reset();
+            document.getElementById('testi-photo').required = true; // Wajib foto saat tambah baru
+            document.getElementById('modal-add-testi').style.display = 'flex';
+        }
+
+        function openEditTesti(id, name, car, quote, rating, photoUrl) {
+            currentEditTestiId = id;
+            currentEditTestiPhoto = photoUrl;
+            document.getElementById('modal-testi-title').innerText = 'Edit Testimoni';
+            document.getElementById('testi-name').value = name;
+            document.getElementById('testi-car').value = car;
+            document.getElementById('testi-quote').value = quote;
+            document.getElementById('testi-rating').value = rating || 5;
+            document.getElementById('testi-photo').required = false; // Foto tidak wajib saat diedit
+            document.getElementById('modal-add-testi').style.display = 'flex';
+        }
+
+        async function deleteTesti(id, photoUrl) {
+            if(confirm('Yakin ingin menghapus testimoni ini?')) {
+                // Hapus data
+                await sbClient.from('testimonials').delete().eq('id', id);
+                
+                // Hapus file foto dari storage jika ada
+                if (photoUrl && photoUrl.includes('uploads/')) {
+                    const filePath = photoUrl.split('uploads/')[1];
+                    if (filePath) {
+                        await sbClient.storage.from('uploads').remove([filePath]);
+                    }
+                }
+
+                showToast('Testimoni berhasil dihapus');
+                loadTestimoni();
+            }
+        }
+
+        document.getElementById('form-add-testi').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-testi');
+            btn.innerText = 'Mengunggah Foto...';
+            btn.disabled = true;
+            
+            const name = document.getElementById('testi-name').value;
+            const car = document.getElementById('testi-car').value;
+            const quote = document.getElementById('testi-quote').value;
+            const rating = parseInt(document.getElementById('testi-rating').value) || 5;
+            const fileInput = document.getElementById('testi-photo');
+            
+            let photo_url = currentEditTestiPhoto; // Gunakan foto lama defaultnya
+            
+            // Jika user memilih file baru, upload ke Storage
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = 'testimoni_' + Date.now() + '.' + fileExt;
+                
+                const { data, error: uploadError } = await sbClient.storage.from('uploads').upload(fileName, file);
+                
+                if (uploadError) {
+                    alert('Gagal mengunggah foto: ' + uploadError.message);
+                    btn.innerText = 'Simpan';
+                    btn.disabled = false;
+                    return;
+                }
+                
+                // Ambil URL publik dari file yang baru diupload
+                const { data: publicUrlData } = sbClient.storage.from('uploads').getPublicUrl(fileName);
+                photo_url = publicUrlData.publicUrl;
+                
+                // Hapus foto lama jika ini adalah proses Edit
+                if (currentEditTestiId && currentEditTestiPhoto && currentEditTestiPhoto.includes('uploads/')) {
+                    const oldPath = currentEditTestiPhoto.split('uploads/')[1];
+                    if (oldPath) sbClient.storage.from('uploads').remove([oldPath]);
+                }
+            }
+
+            btn.innerText = 'Menyimpan Data...';
+
+            let error;
+            if (currentEditTestiId) {
+                const res = await sbClient.from('testimonials').update({ 
+                    client_name: name, car_info: car, quote: quote, rating: rating, photo_url: photo_url 
+                }).eq('id', currentEditTestiId);
+                error = res.error;
+            } else {
+                const res = await sbClient.from('testimonials').insert([{ 
+                    client_name: name, car_info: car, quote: quote, rating: rating, photo_url: photo_url 
+                }]);
+                error = res.error;
+            }
+            
+            btn.innerText = 'Simpan';
+            btn.disabled = false;
+            
+            if (!error) {
+                document.getElementById('modal-add-testi').style.display = 'none';
+                document.getElementById('form-add-testi').reset();
+                showToast(currentEditTestiId ? 'Testimoni diperbarui!' : 'Testimoni baru ditambahkan!');
+                loadTestimoni();
+            } else {
+                alert('Gagal menyimpan data: ' + error.message);
+            }
+        });
+
+        // --- MANAJEMEN FAQ ---
+        let currentEditFaqId = null;
+
+        async function loadFaq() {
+            const tbody = document.getElementById('faq-tbody');
+            tbody.innerHTML = '<tr><td colspan="2" style="padding: 16px 8px; text-align: center;">Memuat...</td></tr>';
+            
+            const { data, error } = await sbClient.from('faq').select('*').order('order_num', { ascending: true }).order('created_at', { ascending: true });
+            
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="2" style="padding: 16px 8px; color: red;">Gagal memuat data</td></tr>';
+                return;
+            }
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="padding: 16px 8px; text-align: center; color: var(--text-muted);">Belum ada pertanyaan.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(faq => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border)';
+                
+                const tdText = document.createElement('td');
+                tdText.style.padding = '16px 8px';
+                tdText.innerHTML = '<strong>' + faq.question + '</strong><br><span style="font-size: 0.875rem; color: var(--text-muted);">' + faq.answer.substring(0, 80) + '...</span>';
+                
+                const tdActions = document.createElement('td');
+                tdActions.style.padding = '16px 8px';
+                tdActions.style.whiteSpace = 'nowrap';
+                
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'btn btn-secondary';
+                btnEdit.style.padding = '8px 12px';
+                btnEdit.style.marginRight = '8px';
+                btnEdit.style.color = 'var(--primary)';
+                btnEdit.style.borderColor = 'var(--primary-light)';
+                btnEdit.innerText = 'Edit';
+                btnEdit.onclick = () => openEditFaq(faq.id, faq.question, faq.answer);
+                
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn btn-secondary';
+                btnDelete.style.padding = '8px 12px';
+                btnDelete.style.color = '#ef4444';
+                btnDelete.style.borderColor = '#fca5a5';
+                btnDelete.innerText = 'Hapus';
+                btnDelete.onclick = () => deleteFaq(faq.id);
+                
+                tdActions.appendChild(btnEdit);
+                tdActions.appendChild(btnDelete);
+                
+                tr.appendChild(tdText);
+                tr.appendChild(tdActions);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openAddFaq() {
+            currentEditFaqId = null;
+            document.getElementById('modal-faq-title').innerText = 'Tambah Pertanyaan Baru';
+            document.getElementById('form-add-faq').reset();
+            document.getElementById('modal-add-faq').style.display = 'flex';
+        }
+
+        function openEditFaq(id, q, a) {
+            currentEditFaqId = id;
+            document.getElementById('modal-faq-title').innerText = 'Edit Pertanyaan';
+            document.getElementById('faq-question').value = q;
+            document.getElementById('faq-answer').value = a;
+            document.getElementById('modal-add-faq').style.display = 'flex';
+        }
+
+        async function deleteFaq(id) {
+            if(confirm('Yakin ingin menghapus FAQ ini?')) {
+                await sbClient.from('faq').delete().eq('id', id);
+                showToast('FAQ berhasil dihapus');
+                loadFaq();
+            }
+        }
+
+        document.getElementById('form-add-faq').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-faq');
+            btn.innerText = 'Menyimpan...';
+            
+            const q = document.getElementById('faq-question').value;
+            const a = document.getElementById('faq-answer').value;
+
+            let error;
+            if (currentEditFaqId) {
+                const res = await sbClient.from('faq').update({ question: q, answer: a }).eq('id', currentEditFaqId);
+                error = res.error;
+            } else {
+                const res = await sbClient.from('faq').insert([{ question: q, answer: a }]);
+                error = res.error;
+            }
+            
+            btn.innerText = 'Simpan';
+            if (!error) {
+                document.getElementById('modal-add-faq').style.display = 'none';
+                document.getElementById('form-add-faq').reset();
+                showToast(currentEditFaqId ? 'FAQ berhasil diperbarui!' : 'FAQ baru berhasil ditambahkan!');
+                loadFaq();
+            } else {
+                alert('Gagal: ' + error.message);
+            }
+        });
+
+
+        // Tutup modal jika klik di luar kotak
+        window.addEventListener('click', function(e) {
+            const modalFaq = document.getElementById('modal-add-faq');
+            const modalTesti = document.getElementById('modal-add-testi');
+            const modalGaleri = document.getElementById('modal-add-galeri');
+            if (e.target === modalFaq) {
+                modalFaq.style.display = 'none';
+            }
+            if (e.target === modalGaleri) { modalGaleri.style.display = 'none'; }
+            if (e.target === modalTesti) {
+                modalTesti.style.display = 'none';
+            }
+        });
+
+        // --- MANAJEMEN PENGATURAN ---
+        async function loadSettings() {
+            const { data, error } = await sbClient.from('settings').select('*');
+            if (data) {
+                data.forEach(item => {
+                    const el = document.getElementById('set-' + item.key);
+                    if (el) el.value = item.value;
+                });
+            }
+        }
+
+        document.getElementById('form-settings').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-settings');
+            btn.innerText = 'Menyimpan...';
+            
+            const updates = [
+                { key: 'whatsapp', value: document.getElementById('set-whatsapp').value },
+                { key: 'email', value: document.getElementById('set-email').value },
+                { key: 'instagram', value: document.getElementById('set-instagram').value },
+                { key: 'facebook', value: document.getElementById('set-facebook').value }
+            ];
+
+            const { error } = await sbClient.from('settings').upsert(updates);
+            
+            btn.innerText = 'Simpan Perubahan';
+            if (!error) {
+                showToast('Pengaturan berhasil disimpan!');
+            } else {
+                alert('Gagal menyimpan: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
