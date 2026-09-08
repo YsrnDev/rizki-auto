@@ -90,7 +90,7 @@
 <body>
 
     <div class="login-card">
-        <img src="../assets/img/muf-logo.avif" alt="MUF Logo">
+        <img id="login-logo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Logo" style="object-fit: contain; width: 100%; height: auto;">
         <h2>Admin Panel</h2>
         <p>Silakan masuk untuk mengelola konten website</p>
 
@@ -152,9 +152,24 @@
                 }, 1000);
             }
         });
+            // Fetch logo from settings
+        async function loadLoginLogo() {
+            try {
+                const { data } = await sbClient.from('settings').select('value').eq('key', 'website_logo').single();
+                if (data && data.value) {
+                    const logoEl = document.getElementById('login-logo');
+                    if (logoEl) logoEl.src = data.value;
+                }
+            } catch (e) {
+                console.error('Error fetching logo', e);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadLoginLogo);
     </script>
 </body>
 </html>
+
+
 
 
 

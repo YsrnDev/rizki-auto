@@ -651,6 +651,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 loadDashboardStats();
+                // Fetch logo for sidebar independently of settings tab
+                sbClient.from('settings').select('value').eq('key', 'website_logo').single().then(({data}) => {
+                    if(data && data.value) {
+                        const sidebarLogo = document.getElementById('sidebar-logo');
+                        if (sidebarLogo) sidebarLogo.src = data.value;
+                    }
+                });
             }, 500); // Give Supabase a bit to auth
         });
 
@@ -1414,6 +1421,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
