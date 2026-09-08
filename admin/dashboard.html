@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css?v=12">
+    <link rel="stylesheet" href="../assets/css/style.css?v=62">
     <style>
         body { display: none; } /* Hidden by default for security */
         body { background-color: var(--bg-body); }
@@ -17,6 +17,7 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
+            flex-shrink: 0;
             background: var(--bg-surface);
             border-right: 1px solid var(--border);
             padding: 32px 24px;
@@ -75,7 +76,57 @@
         .panel-section.active { display: block; }
         .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: white; padding: 12px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); display: none; z-index: 1000; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--bg-surface);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .stat-info h4 {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        .stat-info h2 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .chart-card {
+            background: var(--bg-surface);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -96,17 +147,66 @@
         </aside>
 
         <main class="main-content">
-            <div class="header">
-                <h1>Selamat Datang, Admin</h1>
-                <a href="../index.html" target="_blank" class="btn btn-secondary">Lihat Website <i class="ri-external-link-line"></i></a>
+            <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button id="dashboard-theme-toggle" class="icon-btn" style="background: var(--bg-surface); border: 1px solid var(--border); padding: 8px; border-radius: 50%; cursor: pointer;">
+                        <i class="ri-moon-line"></i>
+                    </button>
+                    <a href="../index.html" target="_blank" class="btn btn-secondary">Lihat Website <i class="ri-external-link-line"></i></a>
+                </div>
             </div>
 
             <!-- Panel: Welcome -->
-            <div id="panel-welcome" class="panel-section active admin-card">
-                <h3>Sistem Terhubung!</h3>
-                <p style="color: var(--text-muted); margin-top: 12px; line-height: 1.6;">
-                    Supabase telah berhasil dihubungkan. Anda sekarang dapat mengelola seluruh konten website dari panel ini. Silakan pilih menu di sebelah kiri.
-                </p>
+            <div id="panel-welcome" class="panel-section active">
+                <div class="admin-card" style="margin-bottom: 24px;">
+                    <h3>Ikhtisar Sistem</h3>
+                    <p style="color: var(--text-muted); margin-top: 8px;">Ringkasan data yang saat ini aktif di website Anda.</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ri-car-line"></i></div>
+                        <div class="stat-info">
+                            <h4>Total Kendaraan</h4>
+                            <h2 id="stat-cars">-</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ri-discuss-line"></i></div>
+                        <div class="stat-info">
+                            <h4>Testimoni</h4>
+                            <h2 id="stat-testimonials">-</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ri-question-answer-line"></i></div>
+                        <div class="stat-info">
+                            <h4>FAQ Aktif</h4>
+                            <h2 id="stat-faq">-</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ri-steering-line"></i></div>
+                        <div class="stat-info">
+                            <h4>Merek Tersedia</h4>
+                            <h2 id="stat-brands">-</h2>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 16px;">Distribusi Transmisi</h4>
+                        <canvas id="transmissionChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 16px;">Distribusi Bahan Bakar</h4>
+                        <canvas id="fuelChart"></canvas>
+                    </div>
+                </div>
             </div>
 
             <!-- Panel: Pengaturan -->
@@ -399,6 +499,117 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/supabase-config.js"></script>
     <script>
+        // --- DASHBOARD THEME TOGGLE ---
+        const themeBtn = document.getElementById('dashboard-theme-toggle');
+        const body = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            if (themeBtn) themeBtn.querySelector('i').className = 'ri-sun-line';
+        }
+
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                const isDark = body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeBtn.querySelector('i').className = isDark ? 'ri-sun-line' : 'ri-moon-line';
+                initCharts(); 
+            });
+        }
+        
+        let transmissionChartInstance = null;
+        let fuelChartInstance = null;
+        let cachedCarData = [];
+
+        async function loadDashboardStats() {
+            try {
+                const [cars, testi, faq, brands] = await Promise.all([
+                    sbClient.from('gallery').select('*', { count: 'exact', head: true }),
+                    sbClient.from('testimonials').select('*', { count: 'exact', head: true }),
+                    sbClient.from('faq').select('*', { count: 'exact', head: true }),
+                    sbClient.from('brands').select('*', { count: 'exact', head: true })
+                ]);
+                
+                document.getElementById('stat-cars').innerText = cars.count || 0;
+                document.getElementById('stat-testimonials').innerText = testi.count || 0;
+                document.getElementById('stat-faq').innerText = faq.count || 0;
+                document.getElementById('stat-brands').innerText = brands.count || 0;
+                
+                const { data: carData } = await sbClient.from('gallery').select('transmission, fuel_type');
+                if (carData) {
+                    initCharts(carData);
+                }
+            } catch (e) {
+                console.error("Error loading stats", e);
+            }
+        }
+        
+        function initCharts(carData) {
+            if (carData) cachedCarData = carData;
+            const data = cachedCarData;
+            
+            if (!data || data.length === 0) return;
+            
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            
+            const transCount = { 'Automatic': 0, 'Manual': 0 };
+            data.forEach(c => {
+                const t = (c.transmission === 'MT' || c.transmission === 'Manual') ? 'Manual' : 'Automatic';
+                transCount[t]++;
+            });
+            
+            const fuelCount = { 'Bensin': 0, 'Diesel': 0, 'Listrik/Hybrid': 0 };
+            data.forEach(c => {
+                const f = (c.fuel_type || '').toLowerCase();
+                if (f.includes('diesel')) fuelCount['Diesel']++;
+                else if (f.includes('listrik') || f.includes('hybrid') || f.includes('ev')) fuelCount['Listrik/Hybrid']++;
+                else fuelCount['Bensin']++;
+            });
+            
+            Chart.defaults.color = textColor;
+            Chart.defaults.font.family = "'Outfit', sans-serif";
+            
+            const ctxTrans = document.getElementById('transmissionChart');
+            if (transmissionChartInstance) transmissionChartInstance.destroy();
+            transmissionChartInstance = new Chart(ctxTrans, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(transCount),
+                    datasets: [{
+                        data: Object.values(transCount),
+                        backgroundColor: ['#0ea5e9', '#3b82f6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+            
+            const ctxFuel = document.getElementById('fuelChart');
+            if (fuelChartInstance) fuelChartInstance.destroy();
+            fuelChartInstance = new Chart(ctxFuel, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(fuelCount),
+                    datasets: [{
+                        label: 'Jumlah Kendaraan',
+                        data: Object.values(fuelCount),
+                        backgroundColor: '#0ea5e9',
+                        borderRadius: 4
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
                 // Cek Login
         sbClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) {
@@ -415,28 +626,33 @@
             window.location.href = 'index.html';
         });
 
-        // Routing Sederhana
-        const navItems = document.querySelectorAll('.nav-item:not(.logout-btn)');
-        const panels = document.querySelectorAll('.panel-section');
-
-        navItems.forEach(item => {
+        // --- TAB NAVIGATION ---
+        document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
+                if(item.id === 'logout-btn') return;
                 e.preventDefault();
-                const target = item.getAttribute('data-target');
-                if(!target) return;
-                
-                navItems.forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
                 
+                const target = item.dataset.target;
+                const panels = document.querySelectorAll('.panel-section');
                 panels.forEach(p => p.classList.remove('active'));
                 document.getElementById('panel-' + target).classList.add('active');
                 
+                if(target === 'welcome') loadDashboardStats();
                 if(target === 'settings') loadSettings();
                 if(target === 'faq') loadFaq();
                 if(target === 'testimoni') loadTestimoni();
                 if(target === 'galeri') loadGaleri();
                 if(target === 'brand') loadBrand();
             });
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                loadDashboardStats();
+            }, 500); // Give Supabase a bit to auth
         });
 
         // Tampilkan Notifikasi (Toast)
@@ -1194,6 +1410,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
