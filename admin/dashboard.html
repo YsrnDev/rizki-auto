@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css?v=62">
+    <link rel="stylesheet" href="../assets/css/style.css?v=63">
     <style>
         body { display: none; } /* Hidden by default for security */
         body { background-color: var(--bg-body); }
@@ -132,9 +132,7 @@
 
     <div class="admin-layout">
         <aside class="sidebar">
-            <div class="sidebar-brand">
-                <img src="../assets/img/muf-logo.avif" alt="Logo">
-            </div>
+            <div class="sidebar-brand"><img id="sidebar-logo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Logo" style="object-fit: contain;"></div>
             <nav class="nav-menu">
                 <a href="#" class="nav-item active" data-target="welcome"><i class="ri-dashboard-line"></i> Dashboard</a>
                 <a href="#" class="nav-item" data-target="galeri"><i class="ri-image-line"></i> Galeri Kendaraan</a>
@@ -533,7 +531,7 @@
                 
                 document.getElementById('stat-cars').innerText = cars.count || 0;
                 document.getElementById('stat-testimonials').innerText = testi.count || 0;
-                document.getElementById('stat-faq').innerText = faq.count || 0;
+                
                 document.getElementById('stat-brands').innerText = brands.count || 0;
                 
                 const { data: carData } = await sbClient.from('gallery').select('transmission, fuel_type');
@@ -1410,6 +1408,10 @@
     </script>
 </body>
 </html>
+
+
+
+
 
 
 
