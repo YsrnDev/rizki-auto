@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     // --- Theme Toggle (Dark/Light Mode) ---
     const themeToggleBtns = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
-    const body = document.body;
+    const body = document.documentElement;
     
     // Check local storage for theme
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
     revealElements.forEach(el => revealObserver.observe(el));
 
     // --- Dynamic Nav Styling on Scroll ---
-    const nav = document.querySelector('.nav-container');
+    const nav = document.querySelector('.floating-nav');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             nav.classList.add('scrolled');
@@ -124,4 +124,83 @@ document.addEventListener("DOMContentLoaded", function() {
             nav.classList.remove('scrolled');
         }
     });
+
+    // Testimonial Carousel Drag-to-Scroll & Dots Logic
+    const track = document.querySelector('.carousel-track');
+    const dotsContainer = document.querySelector('.carousel-dots');
+
+    if (track && dotsContainer) {
+        const cards = track.querySelectorAll('.testi-card');
+        
+        // Generate dots based on number of cards
+        cards.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('carousel-dot');
+            if (index === 0) dot.classList.add('active');
+            
+            // Dot click event
+            dot.addEventListener('click', () => {
+                const cardWidth = cards[0].offsetWidth;
+                const gap = 32;
+                track.scrollTo({
+                    left: (cardWidth + gap) * index,
+                    behavior: 'smooth'
+                });
+            });
+            
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = document.querySelectorAll('.carousel-dot');
+
+        // Sync active dot with scroll position
+        track.addEventListener('scroll', () => {
+            const scrollPos = track.scrollLeft;
+            const cardWidth = cards[0].offsetWidth;
+            const gap = 32;
+            const currentIndex = Math.round(scrollPos / (cardWidth + gap));
+            
+            dots.forEach(d => d.classList.remove('active'));
+            if (dots[currentIndex]) {
+                dots[currentIndex].classList.add('active');
+            }
+        });
+
+        // Drag-to-Scroll
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        track.addEventListener('mousedown', (e) => {
+            isDown = true;
+            track.classList.add('active');
+            startX = e.pageX - track.offsetLeft;
+            scrollLeft = track.scrollLeft;
+            track.style.scrollBehavior = 'auto';
+            track.style.scrollSnapType = 'none';
+        });
+        
+        track.addEventListener('mouseleave', () => {
+            if (!isDown) return;
+            isDown = false;
+            track.classList.remove('active');
+            track.style.scrollBehavior = 'smooth';
+            track.style.scrollSnapType = 'x mandatory';
+        });
+        
+        track.addEventListener('mouseup', () => {
+            isDown = false;
+            track.classList.remove('active');
+            track.style.scrollBehavior = 'smooth';
+            track.style.scrollSnapType = 'x mandatory';
+        });
+        
+        track.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - track.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            track.scrollLeft = scrollLeft - walk;
+        });
+    }
 });
