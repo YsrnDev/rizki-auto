@@ -17,7 +17,7 @@
     <!-- Remix Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
     
-    <link rel="stylesheet" href="assets/css/style.css?v=9">
+    <link rel="stylesheet" href="assets/css/style.css?v=10">
     
     <style>
         .legal-content {
@@ -67,10 +67,30 @@
                 <a href="index.html#faq">FAQ</a>
             </div>
             <div class="nav-actions">
-                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
+                <button id="theme-toggle" class="icon-btn desktop-only" aria-label="Toggle Theme">
                     <i class="ri-moon-line"></i>
                 </button>
-                <a href="index.html#kontak" class="btn btn-primary">Pengajuan</a>
+                <a href="index.html#kontak" class="btn btn-primary desktop-only">Pengajuan</a>
+                <button id="mobile-menu-btn" class="icon-btn mobile-only" aria-label="Menu">
+                    <i class="ri-menu-3-line"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="mobile-menu-dropdown">
+            <div class="mobile-nav-links">
+                <!-- Links will be cloned by JS or we can hardcode them, but let s just copy them -->
+                <a href="index.html#keunggulan">Keunggulan</a>
+                <a href="index.html#proses">Cara Kerja</a>
+                <a href="galeri.html">Galeri</a>
+                <a href="index.html#profil">Profil</a>
+                <a href="index.html#faq">FAQ</a>
+            </div>
+            <div class="mobile-nav-bottom">
+                <button id="theme-toggle-mobile-menu" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-bottom: 12px;">
+                    <i class="ri-moon-line"></i> Ganti Tema
+                </button>
+                <a href="index.html#kontak" class="btn btn-primary" style="width: 100%; justify-content: center;">Pengajuan</a>
             </div>
         </div>
     </nav>
@@ -126,9 +146,7 @@
     </footer>
 
         <!-- Floating Theme Toggle for Mobile -->
-    <button id="theme-toggle-mobile" class="icon-btn mobile-theme-toggle" aria-label="Toggle Theme">
-        <i class="ri-moon-line"></i>
-    </button>
+    
         <!-- Floating WhatsApp -->
     <a href="https://wa.me/6282328936019" class="floating-wa" target="_blank" aria-label="Konsultasi WhatsApp">
         <i class="ri-whatsapp-fill"></i>
@@ -136,9 +154,12 @@
     <!-- Supabase JS (Frontend) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="assets/js/supabase-config.js"></script>
-    <script src="assets/js/script.js?v=52"></script>
+    <script src="assets/js/script.js?v=53"></script>
 </body>
 </html>
+
+
+
 
 
 

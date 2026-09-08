@@ -557,3 +557,51 @@ async function fetchGlobalBrands() {
 
 
 
+
+
+// Hamburger Menu Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const themeToggleMobileMenu = document.getElementById('theme-toggle-mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (mobileMenu.classList.contains('active')) {
+                icon.classList.remove('ri-menu-3-line');
+                icon.classList.add('ri-close-line');
+            } else {
+                icon.classList.remove('ri-close-line');
+                icon.classList.add('ri-menu-3-line');
+            }
+        });
+        
+        // Close menu when clicking a link
+        const mobileLinks = mobileMenu.querySelectorAll('.mobile-nav-links a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                mobileMenuBtn.querySelector('i').classList.replace('ri-close-line', 'ri-menu-3-line');
+            });
+        });
+    }
+    
+    // Theme toggle in mobile menu
+    if (themeToggleMobileMenu) {
+                themeToggleMobileMenu.addEventListener('click', () => {
+            const body = document.documentElement;
+            const isDark = body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            // Update icons
+            const iconClass = isDark ? 'ri-sun-line' : 'ri-moon-line';
+            themeToggleMobileMenu.querySelector('i').className = iconClass;
+            
+            const mainIcon = document.querySelector('#theme-toggle i');
+            if (mainIcon) mainIcon.className = iconClass;
+        });
+    }
+});
+
