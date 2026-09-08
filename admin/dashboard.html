@@ -309,11 +309,15 @@
                 <div class="charts-grid">
                     <div class="chart-card">
                         <h4 style="margin-bottom: 16px;">Distribusi Transmisi</h4>
-                        <canvas id="transmissionChart"></canvas>
+                        <div style="position: relative; height: 240px; width: 100%;">
+                            <canvas id="transmissionChart"></canvas>
+                        </div>
                     </div>
                     <div class="chart-card">
                         <h4 style="margin-bottom: 16px;">Distribusi Bahan Bakar</h4>
-                        <canvas id="fuelChart"></canvas>
+                        <div style="position: relative; height: 240px; width: 100%;">
+                            <canvas id="fuelChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -712,7 +716,7 @@
                         borderWidth: 0
                     }]
                 },
-                options: { cutout: '70%', responsive: true, plugins: { legend: { position: 'bottom' } } }
+                options: { cutout: '70%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
             
             const ctxFuel = document.getElementById('fuelChart');
@@ -730,6 +734,7 @@
                 },
                 options: { 
                     responsive: true, 
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
                         y: { beginAtZero: true, grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' } },
@@ -1551,6 +1556,7 @@
     </script>
 </body>
 </html>
+
 
 
 
