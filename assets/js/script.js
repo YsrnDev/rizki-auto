@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchGlobalFaq();
     fetchGlobalTestimoni();
     fetchGlobalGaleri();
+    fetchGlobalBrands();
 });
 
 
@@ -438,4 +439,32 @@ async function fetchGlobalGaleri() {
 }
 
 
+
+
+
+// --- SUPABASE DYNAMIC BRAND FETCHER ---
+async function fetchGlobalBrands() {
+    if (typeof sbClient === 'undefined') return;
+    
+    const { data, error } = await sbClient.from('brands').select('*').order('created_at', { ascending: true });
+    if (data && data.length > 0) {
+        const track = document.querySelector('.brand-marquee-track');
+        if (!track) return;
+        
+        track.innerHTML = ''; // Hapus brand statis lama
+        
+        // Loop 4 kali (Set 1 sampai Set 4) untuk efek infinite marquee
+        for (let i = 1; i <= 4; i++) {
+            // comment as Set indicator (optional)
+            track.appendChild(document.createComment(' Set ' + i + ' '));
+            
+            data.forEach(item => {
+                const img = document.createElement('img');
+                img.src = item.logo_url;
+                img.alt = item.name;
+                track.appendChild(img);
+            });
+        }
+    }
+}
 

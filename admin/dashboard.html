@@ -86,7 +86,7 @@
             </div>
             <nav class="nav-menu">
                 <a href="#" class="nav-item active" data-target="welcome"><i class="ri-dashboard-line"></i> Dashboard</a>
-                <a href="#" class="nav-item" data-target="galeri"><i class="ri-image-line"></i> Galeri Kendaraan</a>
+                <a href="#" class="nav-item" data-target="galeri"><i class="ri-image-line"></i> Galeri Kendaraan</a>`n                <a href="#" class="nav-item" data-target="brand"><i class="ri-car-line"></i> Merek Mobil</a>
                 <a href="#" class="nav-item" data-target="testimoni"><i class="ri-discuss-line"></i> Testimoni</a>
                 <a href="#" class="nav-item" data-target="faq"><i class="ri-question-answer-line"></i> FAQ</a>
                 <a href="#" class="nav-item" data-target="settings"><i class="ri-settings-3-line"></i> Pengaturan Kontak</a>
@@ -281,10 +281,53 @@
                                 <input type="file" id="galeri-photo" class="form-control" accept="image/*">
                                 <small style="color: var(--text-muted); display: block; margin-top: 4px;">Format: JPG, PNG, WEBP (Maksimal 2MB)</small>
                             </div>
+                            <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 16px;">
+                                <input type="checkbox" id="galeri-is-hero" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                                <label for="galeri-is-hero" style="margin-bottom: 0; cursor: pointer;">Jadikan Foto Utama (Hero & Banner CTA)</label>
+                            </div>
                         </div>
                         <div style="display: flex; gap: 16px; margin-top: 24px; flex-shrink: 0; padding-top: 16px; border-top: 1px solid var(--border);">
                             <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('modal-add-galeri').style.display='none'">Batal</button>
                             <button type="submit" class="btn btn-primary" id="btn-submit-galeri" style="flex: 1;">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Panel: Brands -->
+            <div id="panel-brand" class="panel-section admin-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h3>Manajemen Merek (Brands)</h3>
+                        <p style="color: var(--text-muted); margin-top: 4px;">Atur logo merek mobil yang bergulir di halaman depan.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddBrand()">+ Tambah Merek</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;" id="brand-grid">
+                    <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Memuat data...</p>
+                </div>
+            </div>
+
+            <!-- Modal Tambah/Edit Brand -->
+            <div id="modal-add-brand" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+                <div class="admin-card" style="width: 100%; max-width: 400px; padding: 32px; display: flex; flex-direction: column; max-height: 90vh;">
+                    <h3 id="modal-brand-title" style="margin-bottom: 24px; flex-shrink: 0;">Tambah Logo Merek</h3>
+                    <form id="form-add-brand" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div style="overflow-y: auto; padding-right: 8px;">
+                            <div class="form-group">
+                                <label>Nama Merek</label>
+                                <input type="text" id="brand-name" class="form-control" required placeholder="Contoh: Toyota">
+                            </div>
+                            <div class="form-group">
+                                <label>File Logo</label>
+                                <input type="file" id="brand-logo" class="form-control" accept="image/png, image/jpeg, image/webp, image/svg+xml">
+                                <small style="color: var(--text-muted); display: block; margin-top: 4px;">Format: PNG/SVG (Latar Belakang Transparan)</small>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-top: 24px; flex-shrink: 0; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('modal-add-brand').style.display='none'">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="btn-submit-brand" style="flex: 1;">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -334,6 +377,7 @@
                 if(target === 'faq') loadFaq();
                 if(target === 'testimoni') loadTestimoni();
                 if(target === 'galeri') loadGaleri();
+                if(target === 'brand') loadBrand();
             });
         });
 
@@ -344,11 +388,178 @@
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
+        // --- MANAJEMEN BRAND ---
+        let currentEditBrandId = null;
+        let currentEditBrandLogo = null;
+
+        async function loadBrand() {
+            const grid = document.getElementById('brand-grid');
+            grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Memuat data...</p>';
+            
+            const { data, error } = await sbClient.from('brands').select('*').order('created_at', { ascending: true });
+            
+            if (error) {
+                grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red; padding: 32px;">Gagal memuat data merek</p>';
+                return;
+            }
+            
+            if (data.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Belum ada logo merek.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.style.background = 'var(--bg-body)';
+                card.style.borderRadius = 'var(--radius-lg)';
+                card.style.padding = '16px';
+                card.style.textAlign = 'center';
+                card.style.border = '1px solid var(--border)';
+                
+                const img = document.createElement('img');
+                img.src = item.logo_url;
+                img.style.width = '80px';
+                img.style.height = '60px';
+                img.style.objectFit = 'contain';
+                img.style.marginBottom = '12px';
+                img.style.filter = 'grayscale(100%)';
+                
+                const title = document.createElement('h4');
+                title.innerText = item.name;
+                title.style.margin = '0 0 12px 0';
+                title.style.fontSize = '0.875rem';
+                
+                const btnGroup = document.createElement('div');
+                btnGroup.style.display = 'flex';
+                btnGroup.style.gap = '8px';
+                
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'btn btn-secondary';
+                btnEdit.style.flex = '1';
+                btnEdit.style.padding = '4px 8px';
+                btnEdit.style.fontSize = '0.75rem';
+                btnEdit.innerText = 'Edit';
+                btnEdit.onclick = () => openEditBrand(item.id, item.name, item.logo_url);
+                
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn btn-secondary';
+                btnDelete.style.flex = '1';
+                btnDelete.style.padding = '4px 8px';
+                btnDelete.style.fontSize = '0.75rem';
+                btnDelete.style.color = '#ef4444';
+                btnDelete.style.borderColor = '#fca5a5';
+                btnDelete.innerText = 'Hapus';
+                btnDelete.onclick = () => deleteBrand(item.id, item.logo_url);
+                
+                btnGroup.appendChild(btnEdit);
+                btnGroup.appendChild(btnDelete);
+                
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(btnGroup);
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddBrand() {
+            currentEditBrandId = null;
+            currentEditBrandLogo = null;
+            document.getElementById('modal-brand-title').innerText = 'Tambah Merek Baru';
+            document.getElementById('form-add-brand').reset();
+            document.getElementById('brand-logo').required = true;
+            document.getElementById('modal-add-brand').style.display = 'flex';
+        }
+
+        function openEditBrand(id, name, logoUrl) {
+            currentEditBrandId = id;
+            currentEditBrandLogo = logoUrl;
+            document.getElementById('modal-brand-title').innerText = 'Edit Merek';
+            document.getElementById('brand-name').value = name;
+            document.getElementById('brand-logo').required = false;
+            document.getElementById('modal-add-brand').style.display = 'flex';
+        }
+
+        async function deleteBrand(id, logoUrl) {
+            if(confirm('Yakin ingin menghapus merek ini?')) {
+                await sbClient.from('brands').delete().eq('id', id);
+                if (logoUrl && logoUrl.includes('uploads/')) {
+                    const filePath = logoUrl.split('uploads/')[1];
+                    if (filePath) await sbClient.storage.from('uploads').remove([filePath]);
+                }
+                showToast('Merek berhasil dihapus');
+                loadBrand();
+            }
+        }
+
+        document.getElementById('form-add-brand').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-brand');
+            btn.innerText = 'Mengunggah...';
+            btn.disabled = true;
+            
+            const name = document.getElementById('brand-name').value;
+            const fileInput = document.getElementById('brand-logo');
+            let logo_url = currentEditBrandLogo;
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = 'brand_' + Date.now() + '.' + fileExt;
+                
+                const { error: uploadError } = await sbClient.storage.from('uploads').upload(fileName, file);
+                
+                if (uploadError) {
+                    alert('Gagal mengunggah logo: ' + uploadError.message);
+                    btn.innerText = 'Simpan';
+                    btn.disabled = false;
+                    return;
+                }
+                
+                const { data: publicUrlData } = sbClient.storage.from('uploads').getPublicUrl(fileName);
+                logo_url = publicUrlData.publicUrl;
+                
+                if (currentEditBrandId && currentEditBrandLogo && currentEditBrandLogo.includes('uploads/')) {
+                    const oldPath = currentEditBrandLogo.split('uploads/')[1];
+                    if (oldPath) sbClient.storage.from('uploads').remove([oldPath]);
+                }
+            }
+
+            btn.innerText = 'Menyimpan...';
+
+            let error;
+            if (currentEditBrandId) {
+                const res = await sbClient.from('brands').update({ name: name, logo_url: logo_url }).eq('id', currentEditBrandId);
+                error = res.error;
+            } else {
+                const res = await sbClient.from('brands').insert([{ name: name, logo_url: logo_url }]);
+                error = res.error;
+            }
+            
+            btn.innerText = 'Simpan';
+            btn.disabled = false;
+            
+            if (!error) {
+                document.getElementById('modal-add-brand').style.display = 'none';
+                document.getElementById('form-add-brand').reset();
+                showToast(currentEditBrandId ? 'Merek diperbarui!' : 'Merek ditambahkan!');
+                loadBrand();
+            } else {
+                alert('Gagal menyimpan: ' + error.message);
+            }
+        });
+
         // --- MANAJEMEN GALERI ---
         let currentEditGaleriId = null;
         let currentEditGaleriPhoto = null;
+        let currentHeroImageUrl = null;
 
         async function loadGaleri() {
+            // Ambil info hero image saat ini
+            const { data: settingData } = await sbClient.from('settings').select('value').eq('key', 'hero_image_url').maybeSingle();
+            if (settingData) {
+                currentHeroImageUrl = settingData.value;
+            }
             const grid = document.getElementById('galeri-grid');
             grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">Memuat data...</p>';
             
@@ -421,21 +632,30 @@
             });
         }
 
+
+
+
+
+                function openEditGaleri(id, title, photoUrl) {
+            currentEditGaleriId = id;
+            currentEditGaleriPhoto = photoUrl;
+            document.getElementById('modal-galeri-title').innerText = 'Edit Foto Galeri';
+            document.getElementById('galeri-title').value = title;
+            document.getElementById('galeri-photo').required = false;
+            
+            // Ceklis jika foto ini adalah hero image
+            document.getElementById('galeri-is-hero').checked = (photoUrl === currentHeroImageUrl);
+            
+            document.getElementById('modal-add-galeri').style.display = 'flex';
+        }
+
         function openAddGaleri() {
             currentEditGaleriId = null;
             currentEditGaleriPhoto = null;
             document.getElementById('modal-galeri-title').innerText = 'Tambah Foto Galeri';
             document.getElementById('form-add-galeri').reset();
             document.getElementById('galeri-photo').required = true;
-            document.getElementById('modal-add-galeri').style.display = 'flex';
-        }
-
-        function openEditGaleri(id, title, photoUrl) {
-            currentEditGaleriId = id;
-            currentEditGaleriPhoto = photoUrl;
-            document.getElementById('modal-galeri-title').innerText = 'Edit Foto Galeri';
-            document.getElementById('galeri-title').value = title;
-            document.getElementById('galeri-photo').required = false;
+            document.getElementById('galeri-is-hero').checked = false;
             document.getElementById('modal-add-galeri').style.display = 'flex';
         }
 
@@ -499,6 +719,15 @@
             btn.disabled = false;
             
             if (!error) {
+                // Update hero image if checked
+                const isHero = document.getElementById('galeri-is-hero').checked;
+                if (isHero) {
+                    await sbClient.from('settings').upsert({ key: 'hero_image_url', value: image_url }, { onConflict: 'key' });
+                } else if (image_url === currentHeroImageUrl) {
+                    // Jika uncheck dari yang sebelumnya hero
+                    await sbClient.from('settings').delete().eq('key', 'hero_image_url');
+                }
+
                 document.getElementById('modal-add-galeri').style.display = 'none';
                 document.getElementById('form-add-galeri').reset();
                 showToast(currentEditGaleriId ? 'Galeri diperbarui!' : 'Foto ditambahkan ke Galeri!');
@@ -803,9 +1032,11 @@
             const modalFaq = document.getElementById('modal-add-faq');
             const modalTesti = document.getElementById('modal-add-testi');
             const modalGaleri = document.getElementById('modal-add-galeri');
+            const modalBrand = document.getElementById('modal-add-brand');
             if (e.target === modalFaq) {
                 modalFaq.style.display = 'none';
             }
+            if (e.target === modalBrand) { modalBrand.style.display = 'none'; }
             if (e.target === modalGaleri) { modalGaleri.style.display = 'none'; }
             if (e.target === modalTesti) {
                 modalTesti.style.display = 'none';
@@ -847,6 +1078,13 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
