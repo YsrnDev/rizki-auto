@@ -115,6 +115,7 @@
                 <p style="color: var(--text-muted); margin-top: 8px;">Ubah nomor WhatsApp dan tautan sosial media Anda di sini.</p>
                 
                 <form id="form-settings">
+                    <h4 style="margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Informasi Kontak</h4>
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Nomor WhatsApp (Contoh: 62812345678)</label>
@@ -133,7 +134,32 @@
                             <input type="url" id="set-facebook" class="form-control">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="btn-save-settings" style="margin-top: 16px;">Simpan Perubahan</button>
+                    
+                    <h4 style="margin-top: 32px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Identitas & Logo</h4>
+                    <div class="form-group">
+                        <label>Logo Website</label>
+                        <input type="file" id="set-website_logo" class="form-control" accept="image/*">
+                        <img id="preview-website_logo" style="max-height: 50px; margin-top: 8px; display: none; object-fit: contain;">
+                    </div>
+                    
+                    <h4 style="margin-top: 32px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Profil Konsultan</h4>
+                    <div class="form-group">
+                        <label>Nama Konsultan</label>
+                        <input type="text" id="set-profile_name" class="form-control" placeholder="Contoh: Muhamad Rizki">
+                    </div>
+                    <div class="form-group">
+                        <label>Jabatan / Tagline</label>
+                        <input type="text" id="set-profile_role" class="form-control" placeholder="Contoh: Senior Sales Executive MUF">
+                    </div>
+                    <div class="form-group">
+                        <label>Foto Profil</label>
+                        <input type="file" id="set-profile_photo" class="form-control" accept="image/*">
+                        <img id="preview-profile_photo" style="max-height: 100px; margin-top: 8px; display: none; border-radius: 8px; object-fit: cover;">
+                    </div>
+                    
+                    <div class="form-actions" style="margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary" id="btn-save-settings"><i class="ri-save-line"></i> Simpan Pengaturan</button>
+                    </div>
                 </form>
             </div>
             
@@ -1101,7 +1127,16 @@
             if (data) {
                 data.forEach(item => {
                     const el = document.getElementById('set-' + item.key);
-                    if (el) el.value = item.value;
+                    if (el && el.type !== 'file') el.value = item.value;
+                    
+                    if (item.key === 'website_logo' || item.key === 'profile_photo') {
+                        const preview = document.getElementById('preview-' + item.key);
+                        if (preview && item.value) {
+                            preview.src = item.value;
+                            preview.style.display = 'block';
+                            preview.dataset.url = item.value;
+                        }
+                    }
                 });
             }
         }
@@ -1111,16 +1146,42 @@
             const btn = document.getElementById('btn-save-settings');
             btn.innerText = 'Menyimpan...';
             
+            // File Uploads
+            const fileInputs = ['website_logo', 'profile_photo'];
+            const uploadedUrls = {};
+            
+            for (const key of fileInputs) {
+                const fileEl = document.getElementById('set-' + key);
+                if (fileEl.files.length > 0) {
+                    const file = fileEl.files[0];
+                    const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
+                    const { data, error } = await sbClient.storage.from('images').upload(fileName, file);
+                    if (!error) {
+                        uploadedUrls[key] = supabaseUrl + '/storage/v1/object/public/images/' + fileName;
+                    }
+                } else {
+                    const preview = document.getElementById('preview-' + key);
+                    if (preview && preview.dataset.url) {
+                        uploadedUrls[key] = preview.dataset.url;
+                    }
+                }
+            }
+            
             const updates = [
                 { key: 'whatsapp', value: document.getElementById('set-whatsapp').value },
                 { key: 'email', value: document.getElementById('set-email').value },
                 { key: 'instagram', value: document.getElementById('set-instagram').value },
-                { key: 'facebook', value: document.getElementById('set-facebook').value }
+                { key: 'facebook', value: document.getElementById('set-facebook').value },
+                { key: 'profile_name', value: document.getElementById('set-profile_name').value },
+                { key: 'profile_role', value: document.getElementById('set-profile_role').value }
             ];
+            
+            if (uploadedUrls['website_logo']) updates.push({ key: 'website_logo', value: uploadedUrls['website_logo'] });
+            if (uploadedUrls['profile_photo']) updates.push({ key: 'profile_photo', value: uploadedUrls['profile_photo'] });
 
             const { error } = await sbClient.from('settings').upsert(updates);
             
-            btn.innerText = 'Simpan Perubahan';
+            btn.innerHTML = '<i class="ri-save-line"></i> Simpan Pengaturan';
             if (!error) {
                 showToast('Pengaturan berhasil disimpan!');
             } else {
@@ -1130,6 +1191,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
