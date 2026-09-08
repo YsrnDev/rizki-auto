@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css?v=66">
+    <link rel="stylesheet" href="../assets/css/style.css?v=68">
     <style>
         body { display: none; } /* Hidden by default for security */
         body { background-color: var(--bg-body); }
@@ -23,11 +23,46 @@
             padding: 32px 24px;
             display: flex;
             flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
         }
-        .sidebar-brand { display: flex; align-items: center; justify-content: center; margin-bottom: 48px; }
-        .sidebar-brand img { height: 64px; max-width: 100%; object-fit: contain; }
+        .sidebar.collapsed {
+            width: 88px;
+            padding: 32px 16px;
+        }
+        .sidebar-brand { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 48px;
+            height: 64px; /* fixed height to prevent jumping */
+        }
+        .sidebar.collapsed .sidebar-brand {
+            justify-content: center;
+        }
+        .sidebar-brand img { height: 100%; max-width: 100%; object-fit: contain; transition: opacity 0.2s; }
+        .sidebar.collapsed .sidebar-brand img { display: none; }
+        
+        .toggle-sidebar-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toggle-sidebar-btn:hover {
+            color: var(--primary);
+            background: var(--bg-body);
+        }
+
         .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
         .nav-item {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -37,16 +72,62 @@
             border-radius: var(--radius-md);
             font-weight: 600;
             transition: var(--transition);
+            overflow: hidden;
         }
-        .nav-item i { font-size: 1.25rem; }
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 12px;
+        }
+        .nav-item span {
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .sidebar.collapsed .nav-item span {
+            display: none;
+        }
+        .nav-item i { font-size: 1.25rem; flex-shrink: 0; }
         .nav-item:hover { background: var(--bg-subtle); color: var(--text-main); }
         .nav-item.active { background: var(--primary-light); color: var(--primary); }
+        
+        .nav-tooltip {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--text-main);
+            color: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: 0.2s;
+            z-index: 100;
+        }
+        .nav-tooltip::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 4px 4px 4px 0;
+            border-style: solid;
+            border-color: transparent var(--text-main) transparent transparent;
+        }
+        .sidebar.collapsed .nav-item:hover .nav-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .logout-btn {
             margin-top: auto;
             color: #ef4444;
             cursor: pointer;
         }
         .logout-btn:hover { background: #fef2f2; color: #dc2626; }
+        .sidebar.collapsed .logout-btn { color: #ef4444; }
         
         /* Main Content */
         .main-content {
@@ -134,16 +215,43 @@
 <body>
 
     <div class="admin-layout">
-        <aside class="sidebar">
-            <div class="sidebar-brand"><img id="sidebar-logo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Logo" style="object-fit: contain;"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img id="sidebar-logo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Logo">
+                <button class="toggle-sidebar-btn" id="toggle-sidebar">
+                    <i class="ri-menu-fold-line"></i>
+                </button>
+            </div>
             <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-target="welcome"><i class="ri-dashboard-line"></i> Dashboard</a>
-                <a href="#" class="nav-item" data-target="galeri"><i class="ri-image-line"></i> Galeri Kendaraan</a>
-                <a href="#" class="nav-item" data-target="brand"><i class="ri-car-line"></i> Merek Mobil</a>
-                <a href="#" class="nav-item" data-target="testimoni"><i class="ri-discuss-line"></i> Testimoni</a>
-                <a href="#" class="nav-item" data-target="faq"><i class="ri-question-answer-line"></i> FAQ</a>
-                <a href="#" class="nav-item" data-target="settings"><i class="ri-settings-3-line"></i> Pengaturan</a>
-                <a href="#" class="nav-item logout-btn" id="logout-btn"><i class="ri-logout-box-line"></i> Keluar</a>
+                <a href="#" class="nav-item active" data-target="welcome">
+                    <i class="ri-dashboard-line"></i> <span>Dashboard</span>
+                    <div class="nav-tooltip">Dashboard</div>
+                </a>
+                <a href="#" class="nav-item" data-target="galeri">
+                    <i class="ri-image-line"></i> <span>Galeri Kendaraan</span>
+                    <div class="nav-tooltip">Galeri Kendaraan</div>
+                </a>
+                <a href="#" class="nav-item" data-target="brand">
+                    <i class="ri-steering-line"></i> <span>Merek Mobil</span>
+                    <div class="nav-tooltip">Merek Mobil</div>
+                </a>
+                <a href="#" class="nav-item" data-target="faq">
+                    <i class="ri-question-answer-line"></i> <span>FAQ</span>
+                    <div class="nav-tooltip">FAQ</div>
+                </a>
+                <a href="#" class="nav-item" data-target="testimoni">
+                    <i class="ri-discuss-line"></i> <span>Testimoni</span>
+                    <div class="nav-tooltip">Testimoni</div>
+                </a>
+                <a href="#" class="nav-item" data-target="settings">
+                    <i class="ri-settings-3-line"></i> <span>Pengaturan</span>
+                    <div class="nav-tooltip">Pengaturan</div>
+                </a>
+                
+                <a href="#" class="nav-item logout-btn" id="logout-btn">
+                    <i class="ri-logout-box-r-line"></i> <span>Keluar</span>
+                    <div class="nav-tooltip">Keluar</div>
+                </a>
             </nav>
         </aside>
 
@@ -495,6 +603,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/supabase-config.js"></script>
     <script>
+        // --- SIDEBAR TOGGLE ---
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+        
+        const savedSidebarState = localStorage.getItem('sidebar_collapsed');
+        if (savedSidebarState === 'true') {
+            sidebar.classList.add('collapsed');
+            if (toggleSidebarBtn) toggleSidebarBtn.querySelector('i').className = 'ri-menu-unfold-line';
+        }
+
+        if (toggleSidebarBtn) {
+            toggleSidebarBtn.addEventListener('click', () => {
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebar_collapsed', isCollapsed);
+                toggleSidebarBtn.querySelector('i').className = isCollapsed ? 'ri-menu-unfold-line' : 'ri-menu-fold-line';
+            });
+        }
+
         // --- DASHBOARD THEME TOGGLE ---
         const themeBtn = document.getElementById('dashboard-theme-toggle');
         const body = document.documentElement;
@@ -1417,6 +1543,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
