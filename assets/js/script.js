@@ -413,39 +413,58 @@ async function fetchGlobalGaleri() {
     
     const { data, error } = await sbClient.from('gallery').select('*').order('created_at', { ascending: false });
     if (data && data.length > 0) {
-        const grid = document.querySelector('.gallery-grid');
-        if (!grid) return;
+        // Target 1: Landing Page (gallery-grid)
+        const grid1 = document.querySelector('.gallery-grid');
+        if (grid1) {
+            grid1.innerHTML = ''; // Hapus galeri statis lama
+            
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                div.style.opacity = '0';
+                div.style.transform = 'translateY(30px)';
+                div.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                const img = document.createElement('img');
+                img.src = item.image_url;
+                img.alt = item.title;
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'gallery-overlay';
+                
+                const h4 = document.createElement('h4');
+                h4.innerText = item.title;
+                
+                overlay.appendChild(h4);
+                div.appendChild(img);
+                div.appendChild(overlay);
+                grid1.appendChild(div);
+                
+                setTimeout(() => {
+                    div.style.opacity = '1';
+                    div.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        }
         
-        grid.innerHTML = ''; // Hapus galeri statis lama
-        
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'gallery-item';
-            div.style.opacity = '0';
-            div.style.transform = 'translateY(30px)';
-            div.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        // Target 2: Halaman Galeri (car-grid)
+        const grid2 = document.querySelector('.car-grid');
+        if (grid2) {
+            grid2.innerHTML = '';
             
-            // Gunakan metode native agar aman dari kutip
-            const img = document.createElement('img');
-            img.src = item.image_url;
-            img.alt = item.title;
-            
-            const overlay = document.createElement('div');
-            overlay.className = 'gallery-overlay';
-            
-            const h4 = document.createElement('h4');
-            h4.innerText = item.title;
-            
-            overlay.appendChild(h4);
-            div.appendChild(img);
-            div.appendChild(overlay);
-            grid.appendChild(div);
-            
-            setTimeout(() => {
-                div.style.opacity = '1';
-                div.style.transform = 'translateY(0)';
-            }, 100);
-        });
+            data.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'car-card';
+                
+                // Fetch whatsapp number from settings if available (or use fallback)
+                // We'll just construct the WA link and the global fetchSettings will update the phone number later if we use the right selector!
+                // Actually, fetchGlobalSettings updates a[href^="https://wa.me"] so it will auto-update!
+                
+                div.innerHTML = '<div class="car-img-wrapper"><img src="' + item.image_url + '" alt="' + item.title + '"></div><div class="car-info"><h3 class="car-title">' + item.title + '</h3><div class="car-tags"><span class="tag"><i class="ri-checkbox-circle-fill text-primary"></i> Tersedia via MUF</span></div><div class="car-action"><a href="https://wa.me/6282328936019?text=' + encodeURIComponent('Halo Mas Rizki, saya tertarik untuk hitung simulasi kredit mobil ' + item.title) + '" target="_blank" class="btn btn-primary"><i class="ri-calculator-line"></i> Hitung Simulasi</a></div></div>';
+                
+                grid2.appendChild(div);
+            });
+        }
     }
 }
 
@@ -478,5 +497,6 @@ async function fetchGlobalBrands() {
         }
     }
 }
+
 
 
