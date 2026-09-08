@@ -183,6 +183,55 @@
         </div>
     </main>
 
+    <!-- Car Detail Modal -->
+    <div id="car-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: var(--bg-body); border-radius: var(--radius-lg); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative;">
+            <button onclick="closeCarModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;"><i class="ri-close-line"></i></button>
+            <img id="modal-car-img" src="" style="width: 100%; height: 250px; object-fit: cover;">
+            <div style="padding: 24px;">
+                <h2 id="modal-car-title" style="margin-bottom: 8px; font-size: 1.5rem;"></h2>
+                <div id="modal-car-price" style="color: var(--primary); font-size: 1.25rem; font-weight: 700; margin-bottom: 16px;"></div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; background: var(--bg-card); padding: 16px; border-radius: var(--radius-md);">
+                    <div><span style="color: var(--text-muted); font-size: 0.875rem;">Tahun</span><div id="modal-car-year" style="font-weight: 600;">-</div></div>
+                    <div><span style="color: var(--text-muted); font-size: 0.875rem;">Transmisi</span><div id="modal-car-trans" style="font-weight: 600;">-</div></div>
+                    <div><span style="color: var(--text-muted); font-size: 0.875rem;">Bahan Bakar</span><div id="modal-car-fuel" style="font-weight: 600;">-</div></div>
+                </div>
+                
+                <h4 style="margin-bottom: 8px;">Deskripsi Kendaraan</h4>
+                <p id="modal-car-desc" style="color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; white-space: pre-wrap;"></p>
+                
+                <a id="modal-car-wa" href="#" target="_blank" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="ri-whatsapp-fill"></i> Ajukan Pembiayaan Sekarang</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openCarModal(data) {
+            document.getElementById('modal-car-img').src = data.image_url;
+            document.getElementById('modal-car-title').innerText = data.title;
+            document.getElementById('modal-car-price').innerText = data.price || 'Harga hubungi admin';
+            document.getElementById('modal-car-year').innerText = data.year || '-';
+            document.getElementById('modal-car-trans').innerText = data.transmission || '-';
+            document.getElementById('modal-car-fuel').innerText = data.fuel_type || '-';
+            document.getElementById('modal-car-desc').innerText = data.description || 'Tidak ada deskripsi.';
+            
+            const waNumber = '6282328936019'; // Default
+            document.getElementById('modal-car-wa').href = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent('Halo Mas Rizki, saya tertarik dengan mobil ' + data.title + ' yang ada di Galeri.');
+            
+            document.getElementById('car-modal').style.display = 'flex';
+        }
+        function closeCarModal() {
+            document.getElementById('car-modal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('car-modal');
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    </script>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -207,9 +256,12 @@
     <!-- Supabase JS (Frontend) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="assets/js/supabase-config.js"></script>
-    <script src="assets/js/script.js?v=44"></script>
+    <script src="assets/js/script.js?v=52"></script>
 </body>
 </html>
+
+
+
 
 
 

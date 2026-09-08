@@ -482,15 +482,33 @@ async function fetchGlobalGaleri() {
                 if(item.fuel_type) tagsHtml += '<span class="tag"><i class="ri-gas-station-line"></i> ' + item.fuel_type + '</span>';
                 if(!tagsHtml) tagsHtml = '<span class="tag"><i class="ri-checkbox-circle-fill text-primary"></i> Tersedia via MUF</span>';
                 
-                div.innerHTML = '<div class="car-img-wrapper" style="cursor:pointer;" onclick="openCarModal(\'' + dataStr + '\')"><img src="' + item.image_url + '" alt="' + item.title + '"></div>' + 
+                div.innerHTML = '<div class="car-img-wrapper" style="cursor:pointer;"><img src="' + item.image_url + '"></div>' + 
                                 '<div class="car-info">' + 
-                                    '<h3 class="car-title" style="cursor:pointer;" onclick="openCarModal(\'' + dataStr + '\')">' + item.title + '</h3>' + 
-                                    '<div style="color: var(--primary); font-weight: 700; margin-bottom: 12px;">' + (item.price || '') + '</div>' +
+                                    '<h3 class="car-title" style="cursor:pointer;"></h3>' + 
+                                    '<div style="color: var(--primary); font-weight: 700; margin-bottom: 12px;" class="car-price-display"></div>' +
                                     '<div class="car-tags">' + tagsHtml + '</div>' + 
                                     '<div class="car-action">' + 
-                                        '<button onclick="openCarModal(\'' + dataStr + '\')" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="ri-file-info-line"></i> Lihat Detail</button>' + 
+                                        '<button class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="ri-file-info-line"></i> Lihat Detail</button>' + 
                                     '</div>' + 
                                 '</div>';
+                                
+                // Set text safely
+                div.querySelector('img').alt = item.title;
+                div.querySelector('.car-title').innerText = item.title;
+                div.querySelector('.car-price-display').innerText = item.price || '';
+                
+                // Attach event listeners safely
+                const openModalHandler = () => {
+                    if (typeof openCarModal === 'function') {
+                        openCarModal(item);
+                    } else if (window.openCarModal) {
+                        window.openCarModal(item);
+                    }
+                };
+                
+                div.querySelector('.car-img-wrapper').onclick = openModalHandler;
+                div.querySelector('.car-title').onclick = openModalHandler;
+                div.querySelector('button').onclick = openModalHandler;
                 
                 grid2.appendChild(div);
             });
@@ -527,6 +545,7 @@ async function fetchGlobalBrands() {
         }
     }
 }
+
 
 
 
