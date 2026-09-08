@@ -263,6 +263,17 @@ async function fetchGlobalSettings() {
             const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
             fbLinks.forEach(link => link.href = settings.facebook);
         }
+
+        // Update Hero & Parallax Images
+        if (settings.hero_image_url) {
+            const heroImg = document.querySelector('.hero-main-image');
+            if (heroImg) heroImg.src = settings.hero_image_url;
+            
+            const ctaSection = document.querySelector('.cta-section');
+            if (ctaSection) {
+                ctaSection.style.backgroundImage = 'linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(37, 99, 235, 0.85)), url(' + settings.hero_image_url + ')';
+            }
+        }
     }
 }
 
@@ -467,4 +478,5 @@ async function fetchGlobalBrands() {
         }
     }
 }
+
 
