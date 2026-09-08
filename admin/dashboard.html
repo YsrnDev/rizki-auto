@@ -94,8 +94,8 @@
             left: calc(100% + 12px);
             top: 50%;
             transform: translateY(-50%);
-            background: var(--text-main);
-            color: white;
+            background: #0f172a;
+            color: #ffffff;
             padding: 6px 12px;
             border-radius: var(--radius-sm);
             font-size: 0.75rem;
@@ -114,8 +114,11 @@
             transform: translateY(-50%);
             border-width: 4px 4px 4px 0;
             border-style: solid;
-            border-color: transparent var(--text-main) transparent transparent;
+            border-color: transparent #0f172a transparent transparent;
         }
+        .dark-mode .nav-tooltip { background: #f8fafc; color: #0f172a; }
+        .dark-mode .nav-tooltip::before { border-color: transparent #f8fafc transparent transparent; }
+
         .sidebar.collapsed .nav-item:hover .nav-tooltip {
             opacity: 1;
             visibility: visible;
